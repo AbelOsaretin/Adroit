@@ -1,8 +1,11 @@
 import { Agent } from "@mastra/core/agent";
+import { Memory } from "@mastra/memory";
 import { googleAdsTool } from "../tools/google-ads";
 import { metaAdsTool } from "../tools/meta-ads";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { analyticsTool } from "../tools/analytics";
+
+const memory = new Memory();
 
 export const campaignOptimizerAgent = new Agent({
   id: "campaign-optimizer",
@@ -32,6 +35,12 @@ For payments:
 - Check wallet balance before recommending spend
 - Use USDC on Arc for all transactions
 - Provide transaction hashes for audit trail
+
+Memory Usage:
+- Remember past optimization decisions and their outcomes
+- Store user preferences about budget limits and goals
+- Recall which recommendations worked well
+- Maintain context about specific campaigns across sessions
   `,
   model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
   tools: {
@@ -40,4 +49,5 @@ For payments:
     arcWallet: arcWalletTool,
     analytics: analyticsTool,
   },
+  memory,
 });
