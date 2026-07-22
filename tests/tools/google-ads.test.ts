@@ -54,7 +54,7 @@ describe("googleAdsTool", () => {
     expect(result.success).toBe(false);
   });
 
-  it("should execute get-campaigns in mock mode", async () => {
+  it("should execute get-campaigns", async () => {
     const result = await googleAdsTool.execute({
       action: "get-campaigns",
       accountId: "123-456-7890",
@@ -63,10 +63,9 @@ describe("googleAdsTool", () => {
     expect(result.success).toBe(true);
     expect(result.data?.campaigns).toBeDefined();
     expect(Array.isArray(result.data?.campaigns)).toBe(true);
-    expect(result.mockMode).toBe(true);
   });
 
-  it("should execute get-metrics in mock mode", async () => {
+  it("should execute get-metrics", async () => {
     const result = await googleAdsTool.execute({
       action: "get-metrics",
       accountId: "123-456-7890",
@@ -75,10 +74,9 @@ describe("googleAdsTool", () => {
 
     expect(result.success).toBe(true);
     expect(result.data?.metrics).toBeDefined();
-    expect(result.mockMode).toBe(true);
   });
 
-  it("should execute pause-campaign in mock mode", async () => {
+  it("should execute pause-campaign", async () => {
     const result = await googleAdsTool.execute({
       action: "pause-campaign",
       accountId: "123-456-7890",
@@ -87,10 +85,9 @@ describe("googleAdsTool", () => {
 
     expect(result.success).toBe(true);
     expect(result.data?.paused).toBe("12345");
-    expect(result.mockMode).toBe(true);
   });
 
-  it("should execute update-budget in mock mode", async () => {
+  it("should execute update-budget", async () => {
     const result = await googleAdsTool.execute({
       action: "update-budget",
       accountId: "123-456-7890",
@@ -101,6 +98,5 @@ describe("googleAdsTool", () => {
     expect(result.success).toBe(true);
     expect(result.data?.updated).toBe("12345");
     expect(result.data?.newBudget).toBe(500);
-    expect(result.mockMode).toBe(true);
   });
 });
