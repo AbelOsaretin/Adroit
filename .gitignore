@@ -11,3 +11,6 @@ dashboard/.next/
 dashboard/out/
 .mastra/
 .agents/
+.claude/
+.vscode
+recovery/
