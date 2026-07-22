@@ -54,9 +54,53 @@ describe("googleAdsTool", () => {
     expect(result.success).toBe(false);
   });
 
-  it("should reject get-metrics without campaignId", () => {
-    const invalidInput = { action: "get-metrics", accountId: "123" };
-    const result = googleAdsTool.inputSchema.safeParse(invalidInput);
+  it("should execute get-campaigns in mock mode", async () => {
+    const result = await googleAdsTool.execute({
+      action: "get-campaigns",
+      accountId: "123-456-7890",
+    });
+
     expect(result.success).toBe(true);
+    expect(result.data?.campaigns).toBeDefined();
+    expect(Array.isArray(result.data?.campaigns)).toBe(true);
+    expect(result.mockMode).toBe(true);
+  });
+
+  it("should execute get-metrics in mock mode", async () => {
+    const result = await googleAdsTool.execute({
+      action: "get-metrics",
+      accountId: "123-456-7890",
+      campaignId: "12345678",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.metrics).toBeDefined();
+    expect(result.mockMode).toBe(true);
+  });
+
+  it("should execute pause-campaign in mock mode", async () => {
+    const result = await googleAdsTool.execute({
+      action: "pause-campaign",
+      accountId: "123-456-7890",
+      campaignId: "12345",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.paused).toBe("12345");
+    expect(result.mockMode).toBe(true);
+  });
+
+  it("should execute update-budget in mock mode", async () => {
+    const result = await googleAdsTool.execute({
+      action: "update-budget",
+      accountId: "123-456-7890",
+      campaignId: "12345",
+      budget: 500,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.updated).toBe("12345");
+    expect(result.data?.newBudget).toBe(500);
+    expect(result.mockMode).toBe(true);
   });
 });

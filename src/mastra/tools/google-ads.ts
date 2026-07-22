@@ -1,16 +1,74 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { GoogleAdsApi } from "google-ads-api";
 
-const client = new GoogleAdsApi({
-  client_id: process.env.GOOGLE_ADS_CLIENT_ID!,
-  client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
-  developer_token: process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
-});
+const isMockMode = !process.env.GOOGLE_ADS_REFRESH_TOKEN;
+
+const mockCampaigns = [
+  {
+    id: "12345678",
+    name: "Summer Sale Campaign",
+    status: "ENABLED",
+    type: "SEARCH",
+    budget: 500,
+  },
+  {
+    id: "12345679",
+    name: "Brand Awareness",
+    status: "ENABLED",
+    type: "DISPLAY",
+    budget: 1000,
+  },
+  {
+    id: "12345680",
+    name: "Retargeting Campaign",
+    status: "PAUSED",
+    type: "SEARCH",
+    budget: 300,
+  },
+];
+
+const mockMetrics = {
+  "12345678": {
+    campaignId: "12345678",
+    campaignName: "Summer Sale Campaign",
+    impressions: 45230,
+    clicks: 1823,
+    cost: 245.67,
+    conversions: 89,
+    averageCpc: 0.13,
+    ctr: 0.0403,
+    conversionsValue: 4450.0,
+  },
+  "12345679": {
+    campaignId: "12345679",
+    campaignName: "Brand Awareness",
+    impressions: 128450,
+    clicks: 3210,
+    cost: 892.34,
+    conversions: 45,
+    averageCpc: 0.28,
+    ctr: 0.025,
+    conversionsValue: 2250.0,
+  },
+};
+
+async function getRealClient() {
+  const { GoogleAdsApi } = await import("google-ads-api");
+
+  const client = new GoogleAdsApi({
+    client_id: process.env.GOOGLE_ADS_CLIENT_ID!,
+    client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
+    developer_token: process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
+  });
+
+  return client;
+}
 
 export const googleAdsTool = createTool({
   id: "google-ads",
-  description: "Interact with Google Ads API to manage campaigns",
+  description: isMockMode
+    ? "Interact with Google Ads API (MOCK MODE - no credentials)"
+    : "Interact with Google Ads API to manage campaigns",
   inputSchema: z.object({
     action: z.enum([
       "get-campaigns",
@@ -27,11 +85,18 @@ export const googleAdsTool = createTool({
     success: z.boolean(),
     data: z.any().optional(),
     error: z.string().optional(),
+    mockMode: z.boolean().optional(),
   }),
-  execute: async ({ context }) => {
+  execute: async (inputData) => {
+    const { action, accountId, campaignId, budget } = inputData;
+
+    if (isMockMode) {
+      return handleMockAction(action, campaignId, budget);
+    }
+
     try {
-      const { action, accountId, campaignId, budget } = context;
       const customerId = accountId.replace(/-/g, "");
+      const client = await getRealClient();
 
       const customer = client.Customer({
         customer_id: customerId,
@@ -83,7 +148,7 @@ export const googleAdsTool = createTool({
               metrics.cost_micros,
               metrics.conversions,
               metrics.average_cpc,
-              metrics ctr,
+              metrics.ctr,
               metrics.conversions_value
             FROM campaign
             WHERE campaign.id = ${campaignId}
@@ -143,7 +208,7 @@ export const googleAdsTool = createTool({
 
         case "update-budget": {
           if (!campaignId || !budget) {
-            return { success: false, error: "campaignId and budget are required for update-budget" };
+            return { success: false, error: "campaignId and budget are required" };
           }
 
           const query = `
@@ -198,3 +263,73 @@ export const googleAdsTool = createTool({
     }
   },
 });
+
+function handleMockAction(action: string, campaignId?: string, budget?: number) {
+  switch (action) {
+    case "get-campaigns":
+      return {
+        success: true,
+        data: { campaigns: mockCampaigns },
+        mockMode: true,
+      };
+
+    case "get-metrics": {
+      if (!campaignId) {
+        return { success: false, error: "campaignId is required", mockMode: true };
+      }
+
+      const metrics = mockMetrics[campaignId as keyof typeof mockMetrics];
+      if (!metrics) {
+        return {
+          success: true,
+          data: {
+            metrics: [
+              {
+                campaignId,
+                campaignName: `Campaign ${campaignId}`,
+                impressions: Math.floor(Math.random() * 50000),
+                clicks: Math.floor(Math.random() * 2000),
+                cost: Math.round(Math.random() * 500 * 100) / 100,
+                conversions: Math.floor(Math.random() * 100),
+                averageCpc: Math.round(Math.random() * 0.5 * 100) / 100,
+                ctr: Math.round(Math.random() * 0.1 * 10000) / 10000,
+                conversionsValue: Math.floor(Math.random() * 5000),
+              },
+            ],
+          },
+          mockMode: true,
+        };
+      }
+
+      return {
+        success: true,
+        data: { metrics: [metrics] },
+        mockMode: true,
+      };
+    }
+
+    case "pause-campaign":
+      return {
+        success: true,
+        data: {
+          paused: campaignId,
+          resourceName: `customers/1234567890/campaigns/${campaignId}`,
+        },
+        mockMode: true,
+      };
+
+    case "update-budget":
+      return {
+        success: true,
+        data: {
+          updated: campaignId,
+          newBudget: budget,
+          budgetResourceName: `customers/1234567890/campaignBudgets/${Date.now()}`,
+        },
+        mockMode: true,
+      };
+
+    default:
+      return { success: false, error: `Unknown action: ${action}`, mockMode: true };
+  }
+}
