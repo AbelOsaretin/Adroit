@@ -96,13 +96,13 @@ export const arcWalletTool = createTool({
             (t) => t.token?.symbol === "USDC",
           );
 
-          if (!usdcToken) {
+          if (!usdcToken?.token?.tokenAddress) {
             return { success: false, error: "USDC token not found in wallet" };
           }
 
           const transferResponse = await client.createTransaction({
             walletId,
-            tokenAddress: usdcToken.token?.tokenAddress!,
+            tokenAddress: usdcToken.token.tokenAddress,
             destinationAddress: toAddress,
             amounts: [amount.toString()],
             fee: {
