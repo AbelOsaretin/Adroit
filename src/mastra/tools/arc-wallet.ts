@@ -100,16 +100,15 @@ export const arcWalletTool = createTool({
           }
 
           const usdcTokenAddress = "0x3600000000000000000000000000000000000000";
+          const idempotencyKey = crypto.randomUUID();
 
           const transferResponse = await client.createTransaction({
+            idempotencyKey,
             walletId,
             tokenAddress: usdcTokenAddress,
             destinationAddress: toAddress,
             amounts: [amount.toString()],
-            fee: {
-              type: "level",
-              config: { feeLevel: "MEDIUM" },
-            },
+            feeLevel: "MEDIUM",
           });
 
           const transactionId = transferResponse.data?.id;
