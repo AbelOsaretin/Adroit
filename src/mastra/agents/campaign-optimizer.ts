@@ -5,7 +5,12 @@ import { metaAdsTool } from "../tools/meta-ads";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { analyticsTool } from "../tools/analytics";
 
-const memory = new Memory();
+const memory = new Memory({
+  options: {
+    lastMessages: 20,
+    observationalMemory: true,
+  },
+});
 
 export const campaignOptimizerAgent = new Agent({
   id: "campaign-optimizer",
