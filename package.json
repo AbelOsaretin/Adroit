@@ -14,6 +14,8 @@
   "dependencies": {
     "@circle-fin/developer-controlled-wallets": "^10.8.0",
     "@mastra/core": "latest",
+    "@mastra/libsql": "^1.16.0",
+    "@mastra/memory": "^1.23.0",
     "@mastra/pg": "latest",
     "googleapis": "^144.0.0",
     "pg": "^8.13.0",
