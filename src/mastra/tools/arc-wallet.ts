@@ -4,13 +4,16 @@ import { z } from "zod";
 const isMockMode = !process.env.CIRCLE_API_KEY || !process.env.ENTITY_SECRET;
 
 async function getCircleClient() {
-  const { initiateDeveloperControlledWalletsClient } =
-    await import("@circle-fin/developer-controlled-wallets");
+  const { initiateDeveloperControlledWalletsClient } = await import(
+    "@circle-fin/developer-controlled-wallets"
+  );
 
-  return initiateDeveloperControlledWalletsClient({
+  const client = initiateDeveloperControlledWalletsClient({
     apiKey: process.env.CIRCLE_API_KEY!,
     entitySecret: process.env.ENTITY_SECRET!,
   });
+
+  return client;
 }
 
 export const arcWalletTool = createTool({
@@ -106,9 +109,15 @@ export const arcWalletTool = createTool({
             idempotencyKey,
             walletId,
             tokenAddress: usdcTokenAddress,
+            blockchain: "ARC-TESTNET",
             destinationAddress: toAddress,
-            amounts: [amount.toString()],
-            feeLevel: "MEDIUM",
+            amount: [amount.toString()],
+            fee: {
+              type: "level",
+              config: {
+                feeLevel: "MEDIUM",
+              },
+            },
           });
 
           const transactionId = transferResponse.data?.id;
