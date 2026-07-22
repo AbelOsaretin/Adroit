@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@circle-fin/developer-controlled-wallets": "^10.8.0",
     "@mastra/core": "latest",
     "@mastra/pg": "latest",
     "googleapis": "^144.0.0",
