@@ -29,7 +29,10 @@ export const arcWalletTool = createTool({
     address: z.string().optional().describe("Wallet address"),
     toAddress: z.string().optional().describe("Recipient address for payments"),
     amount: z.number().optional().describe("Amount in USDC"),
-    transactionId: z.string().optional().describe("Transaction UUID for status check (not tx hash)"),
+    transactionId: z
+      .string()
+      .optional()
+      .describe("Transaction UUID for status check (not tx hash)"),
   }),
   outputSchema: z.object({
     success: z.boolean(),
@@ -38,10 +41,18 @@ export const arcWalletTool = createTool({
     mockMode: z.boolean().optional(),
   }),
   execute: async (inputData) => {
-    const { action, walletId, address, toAddress, amount, transactionId } = inputData;
+    const { action, walletId, address, toAddress, amount, transactionId } =
+      inputData;
 
     if (isMockMode) {
-      return handleMockAction(action, walletId, address, toAddress, amount, transactionId);
+      return handleMockAction(
+        action,
+        walletId,
+        address,
+        toAddress,
+        amount,
+        transactionId,
+      );
     }
 
     try {
@@ -71,10 +82,11 @@ export const arcWalletTool = createTool({
               walletId,
               balances: tokenBalances.map((t) => ({
                 symbol: t.token?.symbol,
-                amount: t.balance,
+                amount: t.amount,
                 tokenAddress: t.token?.tokenAddress,
+                date: t.updateDate,
               })),
-              usdcBalance: usdcBalance?.balance || "0",
+              usdcBalance: usdcBalance?.amount || "0",
             },
           };
         }
@@ -87,22 +99,11 @@ export const arcWalletTool = createTool({
             };
           }
 
-          const balanceResponse = await client.getWalletTokenBalance({
-            id: walletId,
-          });
-
-          const tokenBalances = balanceResponse.data?.tokenBalances ?? [];
-          const usdcToken = tokenBalances.find(
-            (t) => t.token?.symbol === "USDC",
-          );
-
-          if (!usdcToken?.token?.tokenAddress) {
-            return { success: false, error: "USDC token not found in wallet" };
-          }
+          const usdcTokenAddress = "0x3600000000000000000000000000000000000000";
 
           const transferResponse = await client.createTransaction({
             walletId,
-            tokenAddress: usdcToken.token.tokenAddress,
+            tokenAddress: usdcTokenAddress,
             destinationAddress: toAddress,
             amounts: [amount.toString()],
             fee: {
@@ -128,7 +129,10 @@ export const arcWalletTool = createTool({
 
         case "get-transaction-history": {
           if (!transactionId) {
-            return { success: false, error: "transactionId is required (UUID format, not tx hash)" };
+            return {
+              success: false,
+              error: "transactionId is required (UUID format, not tx hash)",
+            };
           }
 
           const txResponse = await client.getTransaction({
@@ -145,9 +149,9 @@ export const arcWalletTool = createTool({
               txHash: tx?.txHash,
               from: tx?.sourceAddress,
               to: tx?.destinationAddress,
-              amount: tx?.amount?.[0],
-              createdAt: tx?.createTime,
-              updatedAt: tx?.updateTime,
+              amount: tx?.amounts?.[0],
+              createdAt: tx?.createDate,
+              updatedAt: tx?.updateDate,
             },
           };
         }
@@ -202,7 +206,7 @@ function handleMockAction(
   address?: string,
   toAddress?: string,
   amount?: number,
-  transactionId?: string
+  transactionId?: string,
 ) {
   switch (action) {
     case "get-balance":
