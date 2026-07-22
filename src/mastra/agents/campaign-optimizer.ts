@@ -33,7 +33,7 @@ For payments:
 - Use USDC on Arc for all transactions
 - Provide transaction hashes for audit trail
   `,
-  model: "openai/gpt-4o",
+  model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
   tools: {
     googleAds: googleAdsTool,
     metaAds: metaAdsTool,
