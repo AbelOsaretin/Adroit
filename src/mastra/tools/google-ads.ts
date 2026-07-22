@@ -34,7 +34,10 @@ export const googleAdsTool = createTool({
       "get-metrics",
       "pause-campaign",
       "update-budget",
+      "create-campaign",
     ]),
+    name: z.string().optional().describe("Campaign name for create-campaign"),
+    type: z.enum(["SEARCH", "DISPLAY", "SHOPPING"]).optional().describe("Campaign type for create-campaign"),
     accountId: z.string().describe("Google Ads customer ID (XXXXXXXXXX)"),
     campaignId: z.string().optional().describe("Campaign ID for specific operations"),
     budget: z.number().optional().describe("New budget amount in USD"),
@@ -45,7 +48,7 @@ export const googleAdsTool = createTool({
     error: z.string().optional(),
   }),
   execute: async (inputData) => {
-    const { action, accountId, campaignId, budget } = inputData;
+    const { action, accountId, campaignId, budget, name, type } = inputData;
 
     switch (action) {
       case "get-campaigns":
@@ -89,6 +92,20 @@ export const googleAdsTool = createTool({
           data: {
             updated: campaignId,
             newBudget: budget,
+          },
+        };
+
+      case "create-campaign":
+        const newCampaignId = Math.floor(Math.random() * 90000000) + 10000000;
+        return {
+          success: true,
+          data: {
+            campaignId: newCampaignId.toString(),
+            name: name || "New Campaign",
+            type: type || "SEARCH",
+            budget: budget || 100,
+            status: "ENABLED",
+            resourceName: `customers/${accountId}/campaigns/${newCampaignId}`,
           },
         };
 
