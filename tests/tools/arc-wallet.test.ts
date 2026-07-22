@@ -29,7 +29,7 @@ describe("arcWalletTool", () => {
   });
 
   it("should validate input schema for get-transaction-history", () => {
-    const validInput = { action: "get-transaction-history", txId: "tx-123" };
+    const validInput = { action: "get-transaction-history", transactionId: "tx-123" };
     const result = arcWalletTool.inputSchema.safeParse(validInput);
     expect(result.success).toBe(true);
   });
@@ -75,7 +75,7 @@ describe("arcWalletTool", () => {
   it("should execute get-transaction-history in mock mode", async () => {
     const result = await arcWalletTool.execute({
       action: "get-transaction-history",
-      txId: "tx-123",
+      transactionId: "tx-123",
     });
 
     expect(result.success).toBe(true);

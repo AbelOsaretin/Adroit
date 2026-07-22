@@ -4,9 +4,8 @@ import { z } from "zod";
 const isMockMode = !process.env.CIRCLE_API_KEY || !process.env.ENTITY_SECRET;
 
 async function getCircleClient() {
-  const { initiateDeveloperControlledWalletsClient } = await import(
-    "@circle-fin/developer-controlled-wallets"
-  );
+  const { initiateDeveloperControlledWalletsClient } =
+    await import("@circle-fin/developer-controlled-wallets");
 
   return initiateDeveloperControlledWalletsClient({
     apiKey: process.env.CIRCLE_API_KEY!,
@@ -30,7 +29,7 @@ export const arcWalletTool = createTool({
     address: z.string().optional().describe("Wallet address"),
     toAddress: z.string().optional().describe("Recipient address for payments"),
     amount: z.number().optional().describe("Amount in USDC"),
-    txId: z.string().optional().describe("Transaction ID for status check"),
+    transactionId: z.string().optional().describe("Transaction UUID for status check (not tx hash)"),
   }),
   outputSchema: z.object({
     success: z.boolean(),
@@ -39,10 +38,10 @@ export const arcWalletTool = createTool({
     mockMode: z.boolean().optional(),
   }),
   execute: async (inputData) => {
-    const { action, walletId, address, toAddress, amount, txId } = inputData;
+    const { action, walletId, address, toAddress, amount, transactionId } = inputData;
 
     if (isMockMode) {
-      return handleMockAction(action, walletId, address, toAddress, amount, txId);
+      return handleMockAction(action, walletId, address, toAddress, amount, transactionId);
     }
 
     try {
@@ -51,7 +50,10 @@ export const arcWalletTool = createTool({
       switch (action) {
         case "get-balance": {
           if (!walletId) {
-            return { success: false, error: "walletId is required for get-balance" };
+            return {
+              success: false,
+              error: "walletId is required for get-balance",
+            };
           }
 
           const balanceResponse = await client.getWalletTokenBalance({
@@ -60,7 +62,7 @@ export const arcWalletTool = createTool({
 
           const tokenBalances = balanceResponse.data?.tokenBalances ?? [];
           const usdcBalance = tokenBalances.find(
-            (t) => t.token?.symbol === "USDC"
+            (t) => t.token?.symbol === "USDC",
           );
 
           return {
@@ -91,7 +93,7 @@ export const arcWalletTool = createTool({
 
           const tokenBalances = balanceResponse.data?.tokenBalances ?? [];
           const usdcToken = tokenBalances.find(
-            (t) => t.token?.symbol === "USDC"
+            (t) => t.token?.symbol === "USDC",
           );
 
           if (!usdcToken) {
@@ -125,12 +127,12 @@ export const arcWalletTool = createTool({
         }
 
         case "get-transaction-history": {
-          if (!txId) {
-            return { success: false, error: "txId is required" };
+          if (!transactionId) {
+            return { success: false, error: "transactionId is required (UUID format, not tx hash)" };
           }
 
           const txResponse = await client.getTransaction({
-            id: txId,
+            id: transactionId,
           });
 
           const tx = txResponse.data?.transaction;
@@ -200,7 +202,7 @@ function handleMockAction(
   address?: string,
   toAddress?: string,
   amount?: number,
-  txId?: string
+  transactionId?: string
 ) {
   switch (action) {
     case "get-balance":
@@ -239,7 +241,7 @@ function handleMockAction(
       return {
         success: true,
         data: {
-          transactionId: txId || "mock-tx-123",
+          transactionId: transactionId || `tx-${Date.now()}`,
           state: "COMPLETE",
           txHash: `0x${Date.now().toString(16)}`,
           from: "0x1234567890abcdef1234567890abcdef12345678",
@@ -266,6 +268,10 @@ function handleMockAction(
       };
 
     default:
-      return { success: false, error: `Unknown action: ${action}`, mockMode: true };
+      return {
+        success: false,
+        error: `Unknown action: ${action}`,
+        mockMode: true,
+      };
   }
 }
