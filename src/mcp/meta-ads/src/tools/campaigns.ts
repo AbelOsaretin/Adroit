@@ -37,6 +37,19 @@ export const pause_campaign = {
   },
 };
 
+export const activate_campaign = {
+  name: "meta-ads-activate-campaign",
+  description: "Activate (unpause) a Meta Ads campaign",
+  inputSchema: {
+    type: "object" as const,
+    properties: {
+      accountId: { type: "string", description: "Meta Ad Account ID" },
+      campaignId: { type: "string", description: "Campaign ID to activate" },
+    },
+    required: ["accountId", "campaignId"],
+  },
+};
+
 export const update_budget = {
   name: "meta-ads-update-budget",
   description: "Update campaign daily budget",

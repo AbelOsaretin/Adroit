@@ -9,6 +9,7 @@ import {
   get_campaigns,
   get_campaign_metrics,
   pause_campaign,
+  activate_campaign,
   update_budget,
   create_campaign,
 } from "./tools/campaigns.js";
@@ -31,6 +32,7 @@ const tools = [
   get_campaigns,
   get_campaign_metrics,
   pause_campaign,
+  activate_campaign,
   update_budget,
   create_campaign,
   get_performance_report,
@@ -91,6 +93,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         );
         return {
           content: [{ type: "text", text: JSON.stringify({ success: true, paused: (args as any).campaignId }) }],
+        };
+      }
+
+      case "meta-ads-activate-campaign": {
+        await metaApiRequest(
+          `/${(args as any).campaignId}`,
+          { status: "ACTIVE" },
+          config,
+          "POST"
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true, activated: (args as any).campaignId }) }],
         };
       }
 
