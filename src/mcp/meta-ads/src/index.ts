@@ -4,7 +4,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { metaApiRequest, MetaAuthConfig } from "./auth/meta.js";
+import adsSdk from "facebook-nodejs-business-sdk";
 import {
   get_campaigns,
   get_campaign_metrics,
@@ -47,77 +47,86 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
+  const accessToken = process.env.META_ACCESS_TOKEN!;
+  const AdAccount = adsSdk.AdAccount;
+  const Campaign = adsSdk.Campaign;
+
+  // Initialize the API
+  adsSdk.FacebookAdsApi.init(accessToken);
+
+  // Ensure account ID has act_ prefix
   const rawAccountId = (args as any).accountId;
   const accountId = rawAccountId?.startsWith("act_") ? rawAccountId : `act_${rawAccountId}`;
-
-  const config: MetaAuthConfig = {
-    accessToken: process.env.META_ACCESS_TOKEN!,
-    adAccountId: accountId,
-  };
 
   try {
     switch (name) {
       case "meta-ads-get-campaigns": {
-        const campaigns = await metaApiRequest(
-          `/${accountId}/campaigns`,
-          { fields: "id,name,status,objective,daily_budget" },
-          config
-        );
+        const account = new AdAccount(accountId);
+        const campaigns = await account.getCampaigns([
+          Campaign.Fields.id,
+          Campaign.Fields.name,
+          Campaign.Fields.status,
+          Campaign.Fields.objective,
+          Campaign.Fields.daily_budget,
+        ]);
         return {
-          content: [{ type: "text", text: JSON.stringify(campaigns.data) }],
+          content: [{ type: "text", text: JSON.stringify(campaigns) }],
         };
       }
 
       case "meta-ads-get-campaign-metrics": {
-        const metrics = await metaApiRequest(
-          `/${(args as any).campaignId}/insights`,
-          {
-            fields: "impressions,clicks,spend,actions,ctr,cpc",
-            time_range: '{"since":"2026-01-01","until":"2026-07-30"}',
-          },
-          config
-        );
+        const campaignId = (args as any).campaignId;
+        const campaign = new Campaign(campaignId);
+        const insights = await campaign.getInsights([
+          "impressions",
+          "clicks",
+          "spend",
+          "actions",
+          "ctr",
+          "cpc",
+        ]);
         return {
-          content: [{ type: "text", text: JSON.stringify(metrics.data) }],
+          content: [{ type: "text", text: JSON.stringify(insights) }],
         };
       }
 
       case "meta-ads-pause-campaign": {
-        await fetch(`https://graph.facebook.com/v19.0/${(args as any).campaignId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: "PAUSED",
-            access_token: config.accessToken,
-          }),
+        const campaignId = (args as any).campaignId;
+        const campaign = new Campaign(campaignId);
+        await campaign.update({
+          [Campaign.Fields.status]: "PAUSED",
         });
         return {
-          content: [{ type: "text", text: JSON.stringify({ success: true, paused: (args as any).campaignId }) }],
+          content: [{ type: "text", text: JSON.stringify({ success: true, paused: campaignId }) }],
         };
       }
 
       case "meta-ads-update-budget": {
-        await fetch(`https://graph.facebook.com/v19.0/${(args as any).campaignId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            daily_budget: ((args as any).budget * 100).toString(),
-            access_token: config.accessToken,
-          }),
+        const campaignId = (args as any).campaignId;
+        const budget = (args as any).budget;
+        const campaign = new Campaign(campaignId);
+        await campaign.update({
+          [Campaign.Fields.daily_budget]: (budget * 100).toString(),
         });
         return {
-          content: [{ type: "text", text: JSON.stringify({ success: true, updated: (args as any).campaignId, newBudget: (args as any).budget }) }],
+          content: [{ type: "text", text: JSON.stringify({ success: true, updated: campaignId, newBudget: budget }) }],
         };
       }
 
       case "meta-ads-create-campaign": {
-        const newCampaignId = Math.floor(Math.random() * 90000000000000000) + 10000000000000000;
+        const account = new AdAccount(accountId);
+        const newCampaign = await account.createCampaign([], {
+          [Campaign.Fields.name]: (args as any).name,
+          [Campaign.Fields.status]: "ACTIVE",
+          [Campaign.Fields.objective]: (args as any).objective || "OUTCOME_TRAFFIC",
+          [Campaign.Fields.daily_budget]: ((args as any).budget * 100).toString(),
+        });
         return {
           content: [{
             type: "text",
             text: JSON.stringify({
               success: true,
-              campaignId: newCampaignId.toString(),
+              campaignId: newCampaign.id,
               name: (args as any).name,
               objective: (args as any).objective,
               status: "ACTIVE",
@@ -133,12 +142,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           isError: true,
         };
     }
-  } catch (error) {
+  } catch (error: any) {
+    // Meta SDK throws detailed errors
+    const errorMessage = error.message || error.toString();
+    const errorResponse = error.response?.body?.error || error;
     return {
       content: [{
         type: "text",
         text: JSON.stringify({
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: errorMessage,
+          details: errorResponse,
         }),
       }],
       isError: true,
