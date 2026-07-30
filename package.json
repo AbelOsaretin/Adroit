@@ -19,7 +19,6 @@
     "@mastra/memory": "^1.23.0",
     "@mastra/pg": "latest",
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "facebook-nodejs-business-sdk": "^24.0.1",
     "googleapis": "^144.0.0",
     "pg": "^8.13.0",
     "viem": "^2.21.0",
