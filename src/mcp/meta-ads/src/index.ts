@@ -83,44 +83,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "meta-ads-pause-campaign": {
-        await fetch(`https://graph.facebook.com/v19.0/${(args as any).campaignId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: "PAUSED",
-            access_token: config.accessToken,
-          }),
-        });
+        await metaApiRequest(
+          `/${(args as any).campaignId}`,
+          { status: "PAUSED" },
+          config,
+          "POST"
+        );
         return {
           content: [{ type: "text", text: JSON.stringify({ success: true, paused: (args as any).campaignId }) }],
         };
       }
 
       case "meta-ads-update-budget": {
-        await fetch(`https://graph.facebook.com/v19.0/${(args as any).campaignId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            daily_budget: ((args as any).budget * 100).toString(),
-            access_token: config.accessToken,
-          }),
-        });
+        await metaApiRequest(
+          `/${(args as any).campaignId}`,
+          { daily_budget: ((args as any).budget * 100).toString() },
+          config,
+          "POST"
+        );
         return {
           content: [{ type: "text", text: JSON.stringify({ success: true, updated: (args as any).campaignId, newBudget: (args as any).budget }) }],
         };
       }
 
       case "meta-ads-create-campaign": {
-        const newCampaignId = Math.floor(Math.random() * 90000000000000000) + 10000000000000000;
+        const campaignResponse = await metaApiRequest(
+          `/${accountId}/campaigns`,
+          {
+            name: (args as any).name,
+            status: "PAUSED",
+            objective: (args as any).objective || "OUTCOME_TRAFFIC",
+            daily_budget: ((args as any).budget * 100).toString(),
+            special_ad_categories: "[]",
+          },
+          config
+        );
         return {
           content: [{
             type: "text",
             text: JSON.stringify({
               success: true,
-              campaignId: newCampaignId.toString(),
+              campaignId: campaignResponse.id,
               name: (args as any).name,
               objective: (args as any).objective,
-              status: "ACTIVE",
+              status: "PAUSED",
               dailyBudget: (args as any).budget,
             }),
           }],
