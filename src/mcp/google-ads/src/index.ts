@@ -9,6 +9,7 @@ import {
   getCampaignsTool,
   getCampaignMetricsTool,
   pauseCampaignTool,
+  activateCampaignTool,
   updateBudgetTool,
   createCampaignTool,
 } from "./tools/campaigns.js";
@@ -31,6 +32,7 @@ const tools = [
   getCampaignsTool,
   getCampaignMetricsTool,
   pauseCampaignTool,
+  activateCampaignTool,
   updateBudgetTool,
   createCampaignTool,
   getPerformanceReportTool,
@@ -120,6 +122,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         );
         return {
           content: [{ type: "text", text: JSON.stringify({ success: true, paused: campaignId, data }) }],
+        };
+      }
+
+      case "google-ads-activate-campaign": {
+        const customerId = (args as any).accountId.replace(/-/g, "");
+        const campaignId = (args as any).campaignId;
+        const data = await googleAdsApiRequest(
+          `customers/${customerId}/campaigns:mutate`,
+          config,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              operations: [
+                {
+                  update: {
+                    resource: `customers/${customerId}/campaigns/${campaignId}`,
+                    updateMask: "status",
+                    status: "ENABLED",
+                  },
+                },
+              ],
+            }),
+          }
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true, activated: campaignId, data }) }],
         };
       }
 

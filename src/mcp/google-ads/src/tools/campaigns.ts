@@ -37,6 +37,19 @@ export const pauseCampaignTool = {
   },
 };
 
+export const activateCampaignTool = {
+  name: "google-ads-activate-campaign",
+  description: "Activate (unpause) a Google Ads campaign",
+  inputSchema: {
+    type: "object" as const,
+    properties: {
+      accountId: { type: "string", description: "Google Ads customer ID" },
+      campaignId: { type: "string", description: "Campaign ID to activate" },
+    },
+    required: ["accountId", "campaignId"],
+  },
+};
+
 export const updateBudgetTool = {
   name: "google-ads-update-budget",
   description: "Update campaign budget",
