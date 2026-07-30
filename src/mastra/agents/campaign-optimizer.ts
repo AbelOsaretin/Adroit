@@ -1,6 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { getAllMcpTools } from "../mcp-bridge";
+import { allAdsMcp } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
@@ -12,24 +12,13 @@ const memory = new Memory({
   },
 });
 
-async function getAgentTools() {
-  const mcpTools = await getAllMcpTools();
+// Get tools from MCP servers and add custom tools
+const mcpTools = await allAdsMcp.listTools();
 
-  return {
-    ...mcpTools.all,
-    arcWallet: arcWalletTool,
-    analytics: analyticsTool,
-    crossPlatform: crossPlatformTool,
-  };
-}
-
-export async function createCampaignOptimizerAgent() {
-  const tools = await getAgentTools();
-
-  return new Agent({
-    id: "campaign-optimizer",
-    name: "Campaign Optimizer",
-    instructions: `
+export const campaignOptimizerAgent = new Agent({
+  id: "campaign-optimizer",
+  name: "Campaign Optimizer",
+  instructions: `
 You are an AI marketing agent that helps small businesses optimize their advertising campaigns.
 
 Your primary responsibilities:
@@ -59,12 +48,13 @@ Cross-platform insights:
 - Compare Google vs Meta performance
 - Identify which platform delivers better ROAS
 - Recommend budget allocation across platforms
-    `,
-    model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
-    tools,
-    memory,
-  });
-}
-
-// Export for backward compatibility
-export const campaignOptimizerAgent = await createCampaignOptimizerAgent();
+  `,
+  model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
+  tools: {
+    ...mcpTools,
+    arcWallet: arcWalletTool,
+    analytics: analyticsTool,
+    crossPlatform: crossPlatformTool,
+  },
+  memory,
+});
