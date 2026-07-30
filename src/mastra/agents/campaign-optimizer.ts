@@ -1,9 +1,9 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { googleAdsTool } from "../tools/google-ads";
-import { metaAdsTool } from "../tools/meta-ads";
+import { getAllMcpTools } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { analyticsTool } from "../tools/analytics";
+import { crossPlatformTool } from "../tools/cross-platform";
 
 const memory = new Memory({
   options: {
@@ -12,17 +12,31 @@ const memory = new Memory({
   },
 });
 
-export const campaignOptimizerAgent = new Agent({
-  id: "campaign-optimizer",
-  name: "Campaign Optimizer",
-  instructions: `
+async function getAgentTools() {
+  const mcpTools = await getAllMcpTools();
+
+  return {
+    ...mcpTools.all,
+    arcWallet: arcWalletTool,
+    analytics: analyticsTool,
+    crossPlatform: crossPlatformTool,
+  };
+}
+
+export async function createCampaignOptimizerAgent() {
+  const tools = await getAgentTools();
+
+  return new Agent({
+    id: "campaign-optimizer",
+    name: "Campaign Optimizer",
+    instructions: `
 You are an AI marketing agent that helps small businesses optimize their advertising campaigns.
 
 Your primary responsibilities:
 1. Analyze campaign performance across Google Ads and Meta Ads
 2. Detect anomalies and optimization opportunities
 3. Generate actionable recommendations with clear reasoning
-4. Manage USDC wallet for ad payments on Arc blockchain
+4. Manage USDC wallet for payments on Arc blockchain
 
 When analyzing campaigns:
 - Focus on ROAS (Return on Ad Spend), CPC (Cost Per Click), CTR (Click-Through Rate)
@@ -41,18 +55,16 @@ For payments:
 - Use USDC on Arc for all transactions
 - Provide transaction hashes for audit trail
 
-Memory Usage:
-- Remember past optimization decisions and their outcomes
-- Store user preferences about budget limits and goals
-- Recall which recommendations worked well
-- Maintain context about specific campaigns across sessions
-  `,
-  model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
-  tools: {
-    googleAds: googleAdsTool,
-    metaAds: metaAdsTool,
-    arcWallet: arcWalletTool,
-    analytics: analyticsTool,
-  },
-  memory,
-});
+Cross-platform insights:
+- Compare Google vs Meta performance
+- Identify which platform delivers better ROAS
+- Recommend budget allocation across platforms
+    `,
+    model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
+    tools,
+    memory,
+  });
+}
+
+// Export for backward compatibility
+export const campaignOptimizerAgent = await createCampaignOptimizerAgent();

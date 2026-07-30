@@ -31,9 +31,11 @@ export const analyticsTool = createTool({
       return { success: false, error: "campaigns array is required" };
     }
 
+    const campaignsArray = campaigns as any[];
+
     switch (action) {
       case "aggregate-metrics": {
-        const totals = campaigns.reduce(
+        const totals = campaignsArray.reduce(
           (acc, campaign) => ({
             spend: acc.spend + (campaign.metrics?.spend || campaign.cost || 0),
             impressions: acc.impressions + (campaign.metrics?.impressions || 0),
@@ -55,13 +57,13 @@ export const analyticsTool = createTool({
       }
 
       case "detect-anomalies": {
-        const anomalies = campaigns
-          .filter((campaign) => {
+        const anomalies = campaignsArray
+          .filter((campaign: any) => {
             const ctr = campaign.metrics?.ctr || 0;
             const cpc = campaign.metrics?.cpc || campaign.metrics?.averageCpc || 0;
             return ctr < 0.01 || cpc > 5;
           })
-          .map((campaign) => ({
+          .map((campaign: any) => ({
             campaignId: campaign.id || campaign.campaignId,
             campaignName: campaign.name || campaign.campaignName,
             issue: (campaign.metrics?.ctr || 0) < 0.01 ? "Low CTR" : "High CPC",
@@ -73,12 +75,12 @@ export const analyticsTool = createTool({
       }
 
       case "calculate-roas": {
-        const totalRevenue = campaigns.reduce(
-          (sum, c) => sum + (c.metrics?.conversionsValue || (c.metrics?.conversions || 0) * 50),
+        const totalRevenue = campaignsArray.reduce(
+          (sum: number, c: any) => sum + (c.metrics?.conversionsValue || (c.metrics?.conversions || 0) * 50),
           0
         );
-        const totalSpend = campaigns.reduce(
-          (sum, c) => sum + (c.metrics?.spend || c.cost || 0),
+        const totalSpend = campaignsArray.reduce(
+          (sum: number, c: any) => sum + (c.metrics?.spend || c.cost || 0),
           0
         );
 
