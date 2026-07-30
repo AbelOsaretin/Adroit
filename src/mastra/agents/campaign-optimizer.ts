@@ -49,7 +49,7 @@ Cross-platform insights:
 - Identify which platform delivers better ROAS
 - Recommend budget allocation across platforms
   `,
-  model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
+  model: "groq/llama-3.3-70b-versatile",
   tools: {
     ...mcpTools,
     arcWallet: arcWalletTool,
