@@ -1,9 +1,6 @@
 import { MCPClient } from "@mastra/mcp";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, "../../..");
+const projectRoot = "/home/dev-abel/CodeBase/Playground/Adroit";
 
 // Google Ads MCP Server - using stdio transport
 export const googleAdsMcp = new MCPClient({
@@ -11,7 +8,7 @@ export const googleAdsMcp = new MCPClient({
   servers: {
     googleAds: {
       command: "npx",
-      args: ["tsx", path.join(projectRoot, "src/mcp/google-ads/src/index.ts")],
+      args: ["tsx", `${projectRoot}/src/mcp/google-ads/src/index.ts`],
       env: {
         GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID!,
         GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET!,
@@ -28,7 +25,7 @@ export const metaAdsMcp = new MCPClient({
   servers: {
     metaAds: {
       command: "npx",
-      args: ["tsx", path.join(projectRoot, "src/mcp/meta-ads/src/index.ts")],
+      args: ["tsx", `${projectRoot}/src/mcp/meta-ads/src/index.ts`],
       env: {
         META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN!,
       },
@@ -42,7 +39,7 @@ export const allAdsMcp = new MCPClient({
   servers: {
     googleAds: {
       command: "npx",
-      args: ["tsx", path.join(projectRoot, "src/mcp/google-ads/src/index.ts")],
+      args: ["tsx", `${projectRoot}/src/mcp/google-ads/src/index.ts`],
       env: {
         GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID!,
         GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET!,
@@ -52,7 +49,7 @@ export const allAdsMcp = new MCPClient({
     },
     metaAds: {
       command: "npx",
-      args: ["tsx", path.join(projectRoot, "src/mcp/meta-ads/src/index.ts")],
+      args: ["tsx", `${projectRoot}/src/mcp/meta-ads/src/index.ts`],
       env: {
         META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN!,
       },
