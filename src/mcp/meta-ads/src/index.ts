@@ -47,16 +47,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
+  const rawAccountId = (args as any).accountId;
+  const accountId = rawAccountId?.startsWith("act_") ? rawAccountId : `act_${rawAccountId}`;
+
   const config: MetaAuthConfig = {
     accessToken: process.env.META_ACCESS_TOKEN!,
-    adAccountId: (args as any).accountId,
+    adAccountId: accountId,
   };
 
   try {
     switch (name) {
       case "meta-ads-get-campaigns": {
         const campaigns = await metaApiRequest(
-          `/${(args as any).accountId}/campaigns`,
+          `/${accountId}/campaigns`,
           { fields: "id,name,status,objective,daily_budget" },
           config
         );
