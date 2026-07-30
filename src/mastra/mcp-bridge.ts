@@ -33,7 +33,38 @@ export const metaAdsMcp = new MCPClient({
   },
 });
 
-// Combined MCP client for all ad platforms
+// Mock MCP servers for additional platforms
+export const linkedinAdsMcp = new MCPClient({
+  id: "linkedin-ads",
+  servers: { linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/linkedin-ads/src/index.ts`] } },
+});
+
+export const tiktokAdsMcp = new MCPClient({
+  id: "tiktok-ads",
+  servers: { tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/tiktok-ads/src/index.ts`] } },
+});
+
+export const microsoftAdsMcp = new MCPClient({
+  id: "microsoft-ads",
+  servers: { microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/microsoft-ads/src/index.ts`] } },
+});
+
+export const amazonAdsMcp = new MCPClient({
+  id: "amazon-ads",
+  servers: { amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/amazon-ads/src/index.ts`] } },
+});
+
+export const pinterestAdsMcp = new MCPClient({
+  id: "pinterest-ads",
+  servers: { pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/pinterest-ads/src/index.ts`] } },
+});
+
+export const snapAdsMcp = new MCPClient({
+  id: "snap-ads",
+  servers: { snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/snap-ads/src/index.ts`] } },
+});
+
+// Combined MCP client for ALL ad platforms
 export const allAdsMcp = new MCPClient({
   id: "all-ads",
   servers: {
@@ -50,9 +81,13 @@ export const allAdsMcp = new MCPClient({
     metaAds: {
       command: "npx",
       args: ["tsx", `${projectRoot}/src/mcp/meta-ads/src/index.ts`],
-      env: {
-        META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN!,
-      },
+      env: { META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN! },
     },
+    linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/linkedin-ads/src/index.ts`] },
+    tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/tiktok-ads/src/index.ts`] },
+    microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/microsoft-ads/src/index.ts`] },
+    amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/amazon-ads/src/index.ts`] },
+    pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/pinterest-ads/src/index.ts`] },
+    snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/snap-ads/src/index.ts`] },
   },
 });
