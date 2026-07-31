@@ -109,7 +109,7 @@ export const arcWalletTool = createTool({
             idempotencyKey,
             walletId,
             tokenAddress: usdcTokenAddress,
-            blockchain: "ARC-TESTNET",
+            blockchain: "ARC-TESTNET" as any,
             destinationAddress: toAddress,
             amount: [amount.toString()],
             fee: {
