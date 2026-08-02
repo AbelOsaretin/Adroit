@@ -28,7 +28,7 @@ Autonomous campaign management. USDC payments on Arc. Enterprise marketing for e
 | **Time**       | Business owners work 50+ hours/week running operations — marketing gets neglected            |
 | **Result**     | 50% of small businesses close within 5 years, largely due to poor customer acquisition       |
 
-**33 million small businesses in the US alone.** Most can't afford a single marketing hire, let alone an agency.
+**400 million small businesses across Africa.** Most can't afford a single marketing hire, let alone an agency.
 
 ---
 
@@ -66,23 +66,17 @@ We give small businesses the same holistic marketing service a real agency provi
 
 ## SLIDE 5: MARKET OPPORTUNITY
 
-**400M+ SMBs in Africa. Almost none have real marketing. We fix that.**
+**A continent of 400M+ small businesses — and almost none have real marketing.**
 
-African SMBs don't just lack ad budgets — they lack content, SEO, social media presence, email funnels, and analytics. Adroit replaces the entire marketing department.
+Africa's digital economy is booming. Nigeria's ICT sector alone generates 19.78% of national GDP. South African e-commerce hit $1.8B and grows 66% year over year. Mobile money processes billions monthly across Kenya, Ghana, and beyond. The infrastructure is here. The demand is here. The marketing is not.
 
-| Market        | SMBs    | Digital Marketing Gap                 |
-| ------------- | ------- | ------------------------------------- |
-| Nigeria       | 40M+    | 19.78% of GDP from ICT, near-zero SMB marketing |
-| South Africa  | 2.5M+   | $1.2B ad market, 70% mobile commerce  |
-| Kenya         | 5M+     | M-Pesa economy, minimal digital marketing |
-| Ghana         | 3M+     | Fast-growing, no marketing tools      |
-| Egypt         | 6M+     | 100M+ population, underserved         |
+400M+ micro and small enterprises operate across 54 countries. Most rely on WhatsApp groups and word-of-mouth. They have no SEO, no content strategy, no email funnels, no analytics. Traditional agencies charge $2K–$10K/month — twenty times what these businesses earn. Freelancers are fragmented and unreliable. DIY tools require expertise these owners don't have and time they can't spare.
 
-**TAM:** $8B+ (Africa digital marketing — ads + agencies + content + tools)
-**SAM:** $1.2B (SMBs willing to pay for marketing services)
-**SOM:** $6M (25,000 businesses × $20/mo by Year 5)
+The $8B+ African digital marketing market is growing at 18% CAGR. Paid ads are just one piece — content, social media management, email automation, and analytics make up the rest. No platform today offers all of these as a single service for SMBs at African price points.
 
-**The moat:** No competitor offers ads + content + SEO + social + email + analytics in one platform. USDC payments remove the cross-border friction that locks African SMBs out of Meta and Google.
+Compounding this: African banks restrict USD spending. Meta and Google require hard currency. Cross-border ad payments are broken for millions of businesses. Stablecoin infrastructure — specifically USDC on Arc — eliminates this friction entirely. The agent pays directly. No bank card needed.
+
+We're not building for a niche. We're building for the largest underserved SMB market on Earth.
 
 ---
 
@@ -178,16 +172,18 @@ African SMBs don't just lack ad budgets — they lack content, SEO, social media
 
 **No one else offers autonomous AI marketing + on-chain payments for SMBs.**
 
-| Competitor               | What They Do            | Limitation                          | Adroit Advantage               |
-| ------------------------ | ----------------------- | ----------------------------------- | ------------------------------ |
-| **Google Ads (DIY)**     | Self-serve ad platform  | Single platform, requires expertise | Multi-platform, AI-managed     |
-| **Hootsuite / Buffer**   | Social media scheduling | Scheduling only, no ads             | Full-stack marketing           |
-| **Jasper / Copy.ai**     | AI content generation   | Content only, no execution          | Content + execution + payments |
-| **HubSpot**              | Marketing automation    | Enterprise pricing ($800+/mo)       | SMB pricing ($0–$199/mo)       |
-| **Traditional Agencies** | Full-service marketing  | $2K–$10K/mo, human-dependent        | AI-powered, $29–$199/mo        |
-| **Meta Advantage+**      | Automated ad creation   | Single platform, no cross-platform  | 8+ platforms, unified strategy |
+| Competitor           | What They Do                       | Limitation                                        | Adroit Advantage                        |
+| -------------------- | ---------------------------------- | ------------------------------------------------- | --------------------------------------- |
+| **RYZE AI**          | AI ad optimization (Google, Meta, TikTok) + SEO + website builder | Ads + SEO only, no content/social/email, no on-chain payments | Full marketing stack + USDC payments     |
+| **AdCreative.ai**    | AI ad creative generator (4.2M users) | Generates creatives only, no campaign management or execution | Content generation + autonomous execution + payments |
+| **WordStream/LocaliQ** | PPC management + free audit tools | Enterprise pricing, human-dependent, no AI agents | AI-powered, SMB pricing, fully autonomous |
+| **Hootsuite/Buffer** | Social media scheduling            | Scheduling only, no ads, no content, no payments  | Full-stack marketing, not just scheduling |
+| **Jasper/Copy.ai**   | AI content generation              | Content only, no execution, no campaign management | Content + execution + payments           |
+| **HubSpot**          | Marketing automation + CRM         | Enterprise pricing ($800+/mo), complex setup      | SMB pricing ($0–$199/mo), autonomous     |
+| **Meta Advantage+**  | Automated ad creation              | Single platform, no cross-platform, no content    | 8+ platforms, unified strategy, full stack |
+| **Traditional Agencies** | Full-service marketing         | $2K–$10K/mo, human-dependent, slow                | AI-powered, $29–$199/mo, 24/7           |
 
-**Our moat:** Integrated AI agent that manages the entire marketing stack — not just one piece — with autonomous USDC payments eliminating payment friction.
+**Our moat:** RYZE optimizes ads. AdCreative generates creatives. Hootsuite schedules posts. Jasper writes copy. We do all of it — and pay for the ads autonomously via USDC on Arc. No competitor combines ads + content + SEO + social + email + analytics + payments in one platform.
 
 ---
 
@@ -210,18 +206,39 @@ African SMBs don't just lack ad budgets — they lack content, SEO, social media
 - User authentication and multi-tenancy
 - Next.js dashboard frontend
 
-### Roadmap (18 months)
+### Roadmap
 
-| Phase | Milestone                        | Timeline     |
-| ----- | -------------------------------- | ------------ |
-| 1     | Production infrastructure + auth | Months 1–2   |
-| 2     | Autonomous campaign management   | Months 3–4   |
-| 3     | Content marketing + SEO          | Months 5–6   |
-| 4     | Social media + email automation  | Months 7–8   |
-| 5     | Branding + marketing strategy    | Months 9–10  |
-| 6     | Website services + e-commerce    | Months 11–12 |
-| 7     | Advanced analytics + ML          | Months 13–14 |
-| 8     | White-label platform + partners  | Months 15–18 |
+**Q3 2026**
+
+- Hackathon MVP complete
+- Production infrastructure: PostgreSQL, auth, multi-tenancy
+- Next.js dashboard ships
+- Free tier live, 100 beta users
+- Google and Meta campaigns managed by AI, USDC payments on Arc, ROAS reported in real time
+
+**Q4 2026**
+
+- Autonomous campaign engine under active development
+- Budget optimization, anomaly detection, multi-platform orchestration
+- LinkedIn and TikTok integrations in progress
+- Approval workflow hardened
+- Internal testing with beta cohort
+
+**Q1 2027**
+
+- Content and SEO launch
+- Social media management: scheduling, community tracking, engagement analytics
+- Email automation: drip campaigns, newsletters, sequences
+- Product Hunt launch
+- Target: 1,000 active users, $10K+ MRR
+
+**Q2 2027**
+
+- Agency tier opens for freelancers managing multiple clients
+- White-label offering for existing agencies
+- Advanced analytics and ML-powered forecasting
+- Referral program and partnership channels activate
+- Target: 3,000 active users, $50K+ MRR, seed round closed
 
 ---
 
@@ -289,24 +306,27 @@ African SMBs don't just lack ad budgets — they lack content, SEO, social media
 
 ## SLIDE 14: THE ASK
 
-**We're raising to take Adroit from hackathon MVP to production platform.**
+**A place in the accelerator to take Adroit from hackathon MVP to production platform.**
 
-### Seed Round: $500K–$1M
+### What We Need
 
-**Use of Funds:**
-| Category | Allocation | Purpose |
-|----------|-----------|---------|
-| Engineering | 50% | Production infrastructure, auth, multi-tenancy |
-| Product | 20% | Content, SEO, social, email integrations |
-| Marketing | 15% | Launch, early adopter acquisition, content |
-| Operations | 15% | Legal, compliance, runway |
+- 8-week accelerator programme with weekly workshops
+- 1:1 progress calls with mentors
+- Cohort of builders working alongside us
 
-### Key Milestones with Funding
+### What We'll Deliver
 
-- Month 3: Production-ready platform with auth + multi-tenancy
-- Month 6: 1,000 active users, 5+ real platform integrations
-- Month 12: $10K+ MRR, content + SEO + social live
-- Month 18: $50K+ MRR, white-label offering for agencies
+- **Week 1–2:** Production infrastructure — auth, multi-tenancy, PostgreSQL, Next.js dashboard
+- **Week 3–4:** Autonomous campaign engine — budget optimization, anomaly detection, LinkedIn + TikTok integrations
+- **Week 5–6:** Approval workflow hardened, internal testing with beta cohort
+- **Week 7–8:** Free tier live, 100 beta users, first paying customers on Starter tier
+
+### Why Us
+
+- Working MVP with 50+ tools across 8 platforms
+- Real Google Ads and Meta Ads API integrations via MCP
+- USDC wallet on Arc with Circle Developer-Controlled Wallets
+- Solo founder who built this from concept to working product in weeks
 
 ---
 
