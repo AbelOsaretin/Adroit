@@ -11,7 +11,6 @@ The Agentic Marketing Agent is built on Mastra, an AI agent framework that provi
 The core AI agent that analyzes campaign data and generates optimization recommendations.
 
 **Responsibilities:**
-
 - Analyze campaign performance across platforms
 - Detect anomalies and optimization opportunities
 - Generate actionable recommendations
@@ -20,26 +19,22 @@ The core AI agent that analyzes campaign data and generates optimization recomme
 ### 2. Integration Tools
 
 **Google Ads Tool (`google-ads`)**
-
 - Fetch campaign data and metrics
 - Pause/start campaigns
 - Update budgets
 - Create new campaigns
 
 **Meta Ads Tool (`meta-ads`)**
-
 - Facebook/Instagram campaign management
 - Performance metrics retrieval
 - Budget adjustments
 
 **Arc Wallet Tool (`arc-wallet`)**
-
 - USDC balance checking
 - Payment execution
 - Transaction history
 
 **Analytics Tool (`analytics`)**
-
 - Metric aggregation
 - Anomaly detection
 - ROAS calculation
@@ -48,13 +43,11 @@ The core AI agent that analyzes campaign data and generates optimization recomme
 ### 3. Workflows
 
 **Approval Queue Workflow**
-
 - Validates recommendations
 - Routes to execution based on approval status
 - Handles expiration
 
 **Campaign Executor Workflow**
-
 - Executes approved actions
 - Platform-specific execution
 - Result tracking
@@ -62,7 +55,6 @@ The core AI agent that analyzes campaign data and generates optimization recomme
 ### 4. Storage Layer
 
 PostgreSQL-based persistence for:
-
 - Campaign data
 - Recommendations
 - Transaction history

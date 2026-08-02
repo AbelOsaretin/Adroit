@@ -33,48 +33,48 @@ Small businesses and SMEs face three core challenges:
 
 ### Platforms (2 real + 6 mock)
 
-| Platform      | Status  | Tools    | Integration |
-| ------------- | ------- | -------- | ----------- |
-| Google Ads    | ✅ Real  | 11 tools | MCP + API   |
-| Meta Ads      | ✅ Real  | 11 tools | MCP + API   |
-| LinkedIn Ads  | 🔧 Mock | 5 tools  | MCP (mock)  |
-| TikTok Ads    | 🔧 Mock | 5 tools  | MCP (mock)  |
-| Microsoft Ads | 🔧 Mock | 5 tools  | MCP (mock)  |
-| Amazon Ads    | 🔧 Mock | 5 tools  | MCP (mock)  |
-| Pinterest Ads | 🔧 Mock | 5 tools  | MCP (mock)  |
-| Snap Ads      | 🔧 Mock | 5 tools  | MCP (mock)  |
+| Platform | Status | Tools | Integration |
+|----------|--------|-------|-------------|
+| Google Ads | ✅ Real | 11 tools | MCP + API |
+| Meta Ads | ✅ Real | 11 tools | MCP + API |
+| LinkedIn Ads | 🔧 Mock | 5 tools | MCP (mock) |
+| TikTok Ads | 🔧 Mock | 5 tools | MCP (mock) |
+| Microsoft Ads | 🔧 Mock | 5 tools | MCP (mock) |
+| Amazon Ads | 🔧 Mock | 5 tools | MCP (mock) |
+| Pinterest Ads | 🔧 Mock | 5 tools | MCP (mock) |
+| Snap Ads | 🔧 Mock | 5 tools | MCP (mock) |
 
 ### Campaign Types
 
-| Type                      | Status      | Platforms                  |
-| ------------------------- | ----------- | -------------------------- |
-| Search ads                | ✅ Supported | Google, Microsoft          |
-| Display ads               | ✅ Supported | Google, Microsoft          |
-| Shopping ads              | ✅ Supported | Google, Amazon             |
-| Video ads                 | 🔧 Mock     | All platforms              |
-| App install campaigns     | 🔧 Mock     | Google, Meta, TikTok, Snap |
-| Lead generation campaigns | 🔧 Mock     | Google, Meta, LinkedIn     |
-| Retargeting               | 🔧 Mock     | All platforms              |
-| Remarketing               | 🔧 Mock     | Google, Meta               |
+| Type | Status | Platforms |
+|------|--------|-----------|
+| Search ads | ✅ Supported | Google, Microsoft |
+| Display ads | ✅ Supported | Google, Microsoft |
+| Shopping ads | ✅ Supported | Google, Amazon |
+| Video ads | 🔧 Mock | All platforms |
+| App install campaigns | 🔧 Mock | Google, Meta, TikTok, Snap |
+| Lead generation campaigns | 🔧 Mock | Google, Meta, LinkedIn |
+| Retargeting | 🔧 Mock | All platforms |
+| Remarketing | 🔧 Mock | Google, Meta |
 
 ### Features
 
-| Feature                  | Status  | Tools                                       |
-| ------------------------ | ------- | ------------------------------------------- |
-| Campaign management      | ✅ Real  | Create, pause, activate, update budget      |
-| Cross-platform analytics | ✅ Real  | ROAS, CPC, CTR comparison                   |
-| USDC wallet              | ✅ Real  | Arc blockchain payments                     |
-| Approval workflow        | ✅ Real  | Human-in-the-loop                           |
-| Retargeting audiences    | 🔧 Mock | Website visitors, app users, customer lists |
-| Drip remarketing         | 🔧 Mock | Abandoned cart, past visitors               |
-| Multi-touch attribution  | 🔧 Mock | First/last touch, linear, time decay        |
-| Customer LTV             | 🔧 Mock | Cohort analysis                             |
-| Bid optimization         | 🔧 Mock | AI-powered bidding                          |
-| Performance forecasting  | 🔧 Mock | Predict future results                      |
-| Competitor analysis      | 🔧 Mock | Ad intelligence                             |
-| A/B testing variants     | 🔧 Mock | Generate ad variants                        |
-| Blended CPA              | 🔧 Mock | Cross-channel CPA                           |
-| Budget allocation        | 🔧 Mock | AI-powered reallocation                     |
+| Feature | Status | Tools |
+|---------|--------|-------|
+| Campaign management | ✅ Real | Create, pause, activate, update budget |
+| Cross-platform analytics | ✅ Real | ROAS, CPC, CTR comparison |
+| USDC wallet | ✅ Real | Arc blockchain payments |
+| Approval workflow | ✅ Real | Human-in-the-loop |
+| Retargeting audiences | 🔧 Mock | Website visitors, app users, customer lists |
+| Drip remarketing | 🔧 Mock | Abandoned cart, past visitors |
+| Multi-touch attribution | 🔧 Mock | First/last touch, linear, time decay |
+| Customer LTV | 🔧 Mock | Cohort analysis |
+| Bid optimization | 🔧 Mock | AI-powered bidding |
+| Performance forecasting | 🔧 Mock | Predict future results |
+| Competitor analysis | 🔧 Mock | Ad intelligence |
+| A/B testing variants | 🔧 Mock | Generate ad variants |
+| Blended CPA | 🔧 Mock | Cross-channel CPA |
+| Budget allocation | 🔧 Mock | AI-powered reallocation |
 
 ### What's Built
 

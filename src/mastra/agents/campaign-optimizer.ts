@@ -1,6 +1,5 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { LibSQLStore } from "@mastra/libsql";
 import { allAdsMcp } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { analyticsTool } from "../tools/analytics";
@@ -33,22 +32,15 @@ import {
   optimize_budget_allocation,
 } from "../tools/performance-marketing";
 
-const memoryStorage = new LibSQLStore({
-  id: "campaign-optimizer-memory",
-  url: ":memory:",
-});
-
 const memory = new Memory({
-  storage: memoryStorage,
   options: {
     lastMessages: 20,
     observationalMemory: true,
   },
 });
 
-async function getMcpTools() {
-  return allAdsMcp.listTools();
-}
+// Get tools from MCP servers and add custom tools
+const mcpTools = await allAdsMcp.listTools();
 
 // Wrap tool definitions as Mastra tools
 const videoCampaignTool = createTool({
@@ -278,38 +270,35 @@ Cross-platform insights:
 - Recommend budget allocation across platforms
   `,
   model: "groq/llama-3.3-70b-versatile",
-  tools: async () => {
-    const mcpTools = await getMcpTools();
-    return {
-      // MCP Tools (real + mock platforms)
-      ...mcpTools,
-      // Custom Tools
-      arcWallet: arcWalletTool,
-      analytics: analyticsTool,
-      crossPlatform: crossPlatformTool,
-      // Campaign Types
-      videoCampaign: videoCampaignTool,
-      videoPerformance: videoPerformanceTool,
-      appInstallCampaign: appInstallCampaignTool,
-      appInstallMetrics: appInstallMetricsTool,
-      leadGenCampaign: leadGenCampaignTool,
-      leadGenMetrics: leadGenMetricsTool,
-      // Retargeting & Remarketing
-      retargetingAudience: retargetingAudienceTool,
-      retargetingCampaign: retargetingCampaignTool,
-      retargetingPerformance: retargetingPerformanceTool,
-      remarketingAudience: remarketingAudienceTool,
-      dripCampaign: dripCampaignTool,
-      // Performance Marketing
-      multiTouchAttribution: multiTouchAttributionTool,
-      customerLtv: customerLtvTool,
-      biddingOptimization: biddingOptimizationTool,
-      forecastPerformance: forecastPerformanceTool,
-      competitorAnalysis: competitorAnalysisTool,
-      adVariants: adVariantsTool,
-      blendedCpa: blendedCpaTool,
-      budgetAllocation: budgetAllocationTool,
-    };
+  tools: {
+    // MCP Tools (real + mock platforms)
+    ...mcpTools,
+    // Custom Tools
+    arcWallet: arcWalletTool,
+    analytics: analyticsTool,
+    crossPlatform: crossPlatformTool,
+    // Campaign Types
+    videoCampaign: videoCampaignTool,
+    videoPerformance: videoPerformanceTool,
+    appInstallCampaign: appInstallCampaignTool,
+    appInstallMetrics: appInstallMetricsTool,
+    leadGenCampaign: leadGenCampaignTool,
+    leadGenMetrics: leadGenMetricsTool,
+    // Retargeting & Remarketing
+    retargetingAudience: retargetingAudienceTool,
+    retargetingCampaign: retargetingCampaignTool,
+    retargetingPerformance: retargetingPerformanceTool,
+    remarketingAudience: remarketingAudienceTool,
+    dripCampaign: dripCampaignTool,
+    // Performance Marketing
+    multiTouchAttribution: multiTouchAttributionTool,
+    customerLtv: customerLtvTool,
+    biddingOptimization: biddingOptimizationTool,
+    forecastPerformance: forecastPerformanceTool,
+    competitorAnalysis: competitorAnalysisTool,
+    adVariants: adVariantsTool,
+    blendedCpa: blendedCpaTool,
+    budgetAllocation: budgetAllocationTool,
   },
   memory,
 });
