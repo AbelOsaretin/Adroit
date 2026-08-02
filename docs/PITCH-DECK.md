@@ -66,18 +66,23 @@ We give small businesses the same holistic marketing service a real agency provi
 
 ## SLIDE 5: MARKET OPPORTUNITY
 
-**$400B+  global  digital  advertising  market. $85B spent by SMBs.**
+**400M+ SMBs in Africa. Almost none have real marketing. We fix that.**
 
-| Segment             | Size     | Current Solution          | Pain                                |
-| ------------------- | -------- | ------------------------- | ----------------------------------- |
-| Solo Entrepreneurs  | 27M (US) | DIY / nothing             | No expertise, no time               |
-| Small Businesses    | 6M (US)  | Freelancers / basic tools | Fragmented, expensive               |
-| E-commerce Startups | 2M+ (US) | Agency or self-manage     | Burn cash fast on bad ads           |
-| Local Services      | 4M+ (US) | Word-of-mouth             | Don't know digital marketing exists |
+African SMBs don't just lack ad budgets — they lack content, SEO, social media presence, email funnels, and analytics. Adroit replaces the entire marketing department.
 
-**TAM:** $85B (US SMB digital marketing spend)
-**SAM:** $12B (SMBs actively spending on paid ads)
-**SOM:** $500M (Year 5 target — 50,000 active businesses at avg. $100/mo)
+| Market        | SMBs    | Digital Marketing Gap                 |
+| ------------- | ------- | ------------------------------------- |
+| Nigeria       | 40M+    | 19.78% of GDP from ICT, near-zero SMB marketing |
+| South Africa  | 2.5M+   | $1.2B ad market, 70% mobile commerce  |
+| Kenya         | 5M+     | M-Pesa economy, minimal digital marketing |
+| Ghana         | 3M+     | Fast-growing, no marketing tools      |
+| Egypt         | 6M+     | 100M+ population, underserved         |
+
+**TAM:** $8B+ (Africa digital marketing — ads + agencies + content + tools)
+**SAM:** $1.2B (SMBs willing to pay for marketing services)
+**SOM:** $6M (25,000 businesses × $20/mo by Year 5)
+
+**The moat:** No competitor offers ads + content + SEO + social + email + analytics in one platform. USDC payments remove the cross-border friction that locks African SMBs out of Meta and Google.
 
 ---
 

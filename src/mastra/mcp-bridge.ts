@@ -8,12 +8,12 @@ export const googleAdsMcp = new MCPClient({
   servers: {
     googleAds: {
       command: "npx",
-      args: ["tsx", `${projectRoot}/src/mcp/google-ads/src/index.ts`],
+      args: ["tsx", `${projectRoot}/src/mastra/mcp/google-ads/src/index.ts`],
       env: {
-        GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID!,
-        GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET!,
-        GOOGLE_ADS_REFRESH_TOKEN: process.env.GOOGLE_ADS_REFRESH_TOKEN!,
-        GOOGLE_ADS_DEVELOPER_TOKEN: process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
+        GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID ?? "",
+        GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET ?? "",
+        GOOGLE_ADS_REFRESH_TOKEN: process.env.GOOGLE_ADS_REFRESH_TOKEN ?? "",
+        GOOGLE_ADS_DEVELOPER_TOKEN: process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "",
       },
     },
   },
@@ -25,9 +25,9 @@ export const metaAdsMcp = new MCPClient({
   servers: {
     metaAds: {
       command: "npx",
-      args: ["tsx", `${projectRoot}/src/mcp/meta-ads/src/index.ts`],
+      args: ["tsx", `${projectRoot}/src/mastra/mcp/meta-ads/src/index.ts`],
       env: {
-        META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN!,
+        META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN ?? "",
       },
     },
   },
@@ -36,32 +36,32 @@ export const metaAdsMcp = new MCPClient({
 // Mock MCP servers for additional platforms
 export const linkedinAdsMcp = new MCPClient({
   id: "linkedin-ads",
-  servers: { linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/linkedin-ads/src/index.ts`] } },
+  servers: { linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/linkedin-ads/src/index.ts`] } },
 });
 
 export const tiktokAdsMcp = new MCPClient({
   id: "tiktok-ads",
-  servers: { tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/tiktok-ads/src/index.ts`] } },
+  servers: { tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/tiktok-ads/src/index.ts`] } },
 });
 
 export const microsoftAdsMcp = new MCPClient({
   id: "microsoft-ads",
-  servers: { microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/microsoft-ads/src/index.ts`] } },
+  servers: { microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/microsoft-ads/src/index.ts`] } },
 });
 
 export const amazonAdsMcp = new MCPClient({
   id: "amazon-ads",
-  servers: { amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/amazon-ads/src/index.ts`] } },
+  servers: { amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/amazon-ads/src/index.ts`] } },
 });
 
 export const pinterestAdsMcp = new MCPClient({
   id: "pinterest-ads",
-  servers: { pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/pinterest-ads/src/index.ts`] } },
+  servers: { pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/pinterest-ads/src/index.ts`] } },
 });
 
 export const snapAdsMcp = new MCPClient({
   id: "snap-ads",
-  servers: { snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/snap-ads/src/index.ts`] } },
+  servers: { snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/snap-ads/src/index.ts`] } },
 });
 
 // Combined MCP client for ALL ad platforms
@@ -70,24 +70,24 @@ export const allAdsMcp = new MCPClient({
   servers: {
     googleAds: {
       command: "npx",
-      args: ["tsx", `${projectRoot}/src/mcp/google-ads/src/index.ts`],
+      args: ["tsx", `${projectRoot}/src/mastra/mcp/google-ads/src/index.ts`],
       env: {
-        GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID!,
-        GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET!,
-        GOOGLE_ADS_REFRESH_TOKEN: process.env.GOOGLE_ADS_REFRESH_TOKEN!,
-        GOOGLE_ADS_DEVELOPER_TOKEN: process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
+        GOOGLE_ADS_CLIENT_ID: process.env.GOOGLE_ADS_CLIENT_ID ?? "",
+        GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET ?? "",
+        GOOGLE_ADS_REFRESH_TOKEN: process.env.GOOGLE_ADS_REFRESH_TOKEN ?? "",
+        GOOGLE_ADS_DEVELOPER_TOKEN: process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "",
       },
     },
     metaAds: {
       command: "npx",
-      args: ["tsx", `${projectRoot}/src/mcp/meta-ads/src/index.ts`],
-      env: { META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN! },
+      args: ["tsx", `${projectRoot}/src/mastra/mcp/meta-ads/src/index.ts`],
+      env: { META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN ?? "" },
     },
-    linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/linkedin-ads/src/index.ts`] },
-    tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/tiktok-ads/src/index.ts`] },
-    microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/microsoft-ads/src/index.ts`] },
-    amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/amazon-ads/src/index.ts`] },
-    pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/pinterest-ads/src/index.ts`] },
-    snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mcp/snap-ads/src/index.ts`] },
+    // linkedinAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/linkedin-ads/src/index.ts`] },
+    // tiktokAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/tiktok-ads/src/index.ts`] },
+    // microsoftAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/microsoft-ads/src/index.ts`] },
+    // amazonAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/amazon-ads/src/index.ts`] },
+    // pinterestAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/pinterest-ads/src/index.ts`] },
+    // snapAds: { command: "npx", args: ["tsx", `${projectRoot}/src/mastra/mcp/snap-ads/src/index.ts`] },
   },
 });

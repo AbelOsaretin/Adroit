@@ -48,7 +48,8 @@ const videoCampaignTool = createTool({
   description: create_video_campaign.description,
   inputSchema: create_video_campaign.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_video_campaign.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_video_campaign.name, inputData),
 });
 
 const videoPerformanceTool = createTool({
@@ -56,7 +57,8 @@ const videoPerformanceTool = createTool({
   description: get_video_performance.description,
   inputSchema: get_video_performance.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(get_video_performance.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(get_video_performance.name, inputData),
 });
 
 const appInstallCampaignTool = createTool({
@@ -64,7 +66,8 @@ const appInstallCampaignTool = createTool({
   description: create_app_install_campaign.description,
   inputSchema: create_app_install_campaign.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_app_install_campaign.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_app_install_campaign.name, inputData),
 });
 
 const appInstallMetricsTool = createTool({
@@ -72,7 +75,8 @@ const appInstallMetricsTool = createTool({
   description: get_app_install_metrics.description,
   inputSchema: get_app_install_metrics.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(get_app_install_metrics.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(get_app_install_metrics.name, inputData),
 });
 
 const leadGenCampaignTool = createTool({
@@ -80,7 +84,8 @@ const leadGenCampaignTool = createTool({
   description: create_lead_gen_campaign.description,
   inputSchema: create_lead_gen_campaign.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_lead_gen_campaign.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_lead_gen_campaign.name, inputData),
 });
 
 const leadGenMetricsTool = createTool({
@@ -88,7 +93,8 @@ const leadGenMetricsTool = createTool({
   description: get_lead_gen_metrics.description,
   inputSchema: get_lead_gen_metrics.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(get_lead_gen_metrics.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(get_lead_gen_metrics.name, inputData),
 });
 
 const retargetingAudienceTool = createTool({
@@ -96,7 +102,8 @@ const retargetingAudienceTool = createTool({
   description: create_retargeting_audience.description,
   inputSchema: create_retargeting_audience.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_retargeting_audience.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_retargeting_audience.name, inputData),
 });
 
 const retargetingCampaignTool = createTool({
@@ -104,7 +111,8 @@ const retargetingCampaignTool = createTool({
   description: create_retargeting_campaign.description,
   inputSchema: create_retargeting_campaign.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_retargeting_campaign.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_retargeting_campaign.name, inputData),
 });
 
 const retargetingPerformanceTool = createTool({
@@ -112,7 +120,8 @@ const retargetingPerformanceTool = createTool({
   description: get_retargeting_performance.description,
   inputSchema: get_retargeting_performance.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(get_retargeting_performance.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(get_retargeting_performance.name, inputData),
 });
 
 const remarketingAudienceTool = createTool({
@@ -120,7 +129,8 @@ const remarketingAudienceTool = createTool({
   description: create_remarketing_audience.description,
   inputSchema: create_remarketing_audience.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_remarketing_audience.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_remarketing_audience.name, inputData),
 });
 
 const dripCampaignTool = createTool({
@@ -128,7 +138,8 @@ const dripCampaignTool = createTool({
   description: create_drip_campaign.description,
   inputSchema: create_drip_campaign.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(create_drip_campaign.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(create_drip_campaign.name, inputData),
 });
 
 const multiTouchAttributionTool = createTool({
@@ -136,7 +147,8 @@ const multiTouchAttributionTool = createTool({
   description: multi_touch_attribution.description,
   inputSchema: multi_touch_attribution.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(multi_touch_attribution.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(multi_touch_attribution.name, inputData),
 });
 
 const customerLtvTool = createTool({
@@ -144,7 +156,8 @@ const customerLtvTool = createTool({
   description: calculate_customer_ltv.description,
   inputSchema: calculate_customer_ltv.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(calculate_customer_ltv.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(calculate_customer_ltv.name, inputData),
 });
 
 const biddingOptimizationTool = createTool({
@@ -160,7 +173,8 @@ const forecastPerformanceTool = createTool({
   description: forecast_campaign_performance.description,
   inputSchema: forecast_campaign_performance.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(forecast_campaign_performance.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(forecast_campaign_performance.name, inputData),
 });
 
 const competitorAnalysisTool = createTool({
@@ -168,7 +182,8 @@ const competitorAnalysisTool = createTool({
   description: analyze_competitor_ads.description,
   inputSchema: analyze_competitor_ads.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(analyze_competitor_ads.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(analyze_competitor_ads.name, inputData),
 });
 
 const adVariantsTool = createTool({
@@ -176,7 +191,8 @@ const adVariantsTool = createTool({
   description: generate_ad_variants.description,
   inputSchema: generate_ad_variants.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(generate_ad_variants.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(generate_ad_variants.name, inputData),
 });
 
 const blendedCpaTool = createTool({
@@ -184,7 +200,8 @@ const blendedCpaTool = createTool({
   description: calculate_blended_cpa.description,
   inputSchema: calculate_blended_cpa.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(calculate_blended_cpa.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(calculate_blended_cpa.name, inputData),
 });
 
 const budgetAllocationTool = createTool({
@@ -192,7 +209,8 @@ const budgetAllocationTool = createTool({
   description: optimize_budget_allocation.description,
   inputSchema: optimize_budget_allocation.inputSchema as any,
   outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(optimize_budget_allocation.name, inputData),
+  execute: async (inputData) =>
+    mockExecute(optimize_budget_allocation.name, inputData),
 });
 
 function create_tool_output_schema() {
@@ -269,7 +287,8 @@ Cross-platform insights:
 - Identify which platform delivers better ROAS for each objective
 - Recommend budget allocation across platforms
   `,
-  model: "groq/llama-3.3-70b-versatile",
+  // model: "groq/llama-3.3-70b-versatile",
+  model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
   tools: {
     // MCP Tools (real + mock platforms)
     ...mcpTools,
