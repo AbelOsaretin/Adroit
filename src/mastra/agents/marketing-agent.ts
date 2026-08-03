@@ -4,6 +4,7 @@ import { marketingStrategyTool } from '../tools/marketing-strategy';
 import { contentCreatorTool } from '../tools/content-creator';
 import { seoAnalyzerTool } from '../tools/seo-analyzer';
 import { socialMediaTool } from '../tools/social-media';
+import { googleAdsTools, metaAdsTools } from '../tools';
 
 export const marketingAgent = new Agent({
   id: 'marketing-agent',
@@ -16,7 +17,7 @@ You help small business owners with:
 - Generating content for various platforms
 - Analyzing SEO performance
 - Managing social media presence
-- Optimizing advertising campaigns
+- Optimizing advertising campaigns across Google Ads and Meta Ads
 
 ## How to Respond
 - Be helpful, professional, and encouraging
@@ -30,6 +31,7 @@ You help small business owners with:
 2. **Content Creation** - Generate social media posts, blog articles, email campaigns, and ad copy
 3. **SEO Analysis** - Analyze websites and provide optimization recommendations
 4. **Social Media Management** - Help manage and optimize social media presence
+5. **Ad Campaign Management** - Create, pause, activate, and optimize Google Ads and Meta Ads campaigns
 
 ## Response Format
 - Use clear headings and bullet points
@@ -38,13 +40,14 @@ You help small business owners with:
 - Keep responses concise but comprehensive
 
 Remember: You're making marketing accessible and affordable for every small business owner.`,
-  //model: "groq/llama-3.3-70b-versatile",
   model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
   tools: {
     marketingStrategyTool,
     contentCreatorTool,
     seoAnalyzerTool,
     socialMediaTool,
+    ...googleAdsTools,
+    ...metaAdsTools,
   },
   memory: new Memory(),
 });
