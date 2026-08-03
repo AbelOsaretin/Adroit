@@ -36,6 +36,38 @@ const memory = new Memory({
   options: {
     lastMessages: 20,
     observationalMemory: true,
+    workingMemory: {
+      enabled: true,
+      scope: 'resource',
+      template: `# Business Profile
+
+## Company Info
+- Name:
+- Industry:
+- Website:
+- Size:
+
+## Marketing Context
+- Current Channels:
+- Monthly Budget:
+- Goals:
+- Target Audience:
+- Pain Points:
+- Competitors:
+
+## Brand & Assets
+- Primary Color:
+- Secondary Color:
+- Brand Voice:
+
+## Social Media
+- Instagram:
+- Facebook:
+- Twitter/X:
+- LinkedIn:
+- TikTok:
+`,
+    },
   },
 });
 
@@ -243,6 +275,14 @@ export const campaignOptimizerAgent = new Agent({
   instructions: `
 You are an AI marketing agent that helps small businesses optimize their advertising campaigns across ALL major platforms.
 
+## Business Context
+You have access to the client's Business Profile via working memory. This includes:
+- Company info (name, industry, website, size)
+- Marketing context (channels, budget, goals, target audience, pain points, competitors)
+- Brand assets (colors, voice, social media handles)
+
+ALWAYS reference this business profile when making recommendations. Tailor your advice to their specific industry, budget, and goals.
+
 Your primary responsibilities:
 1. Analyze campaign performance across Google, Meta, LinkedIn, TikTok, Microsoft, Amazon, Pinterest, and Snap Ads
 2. Detect anomalies and optimization opportunities
@@ -264,6 +304,8 @@ When generating recommendations:
 - Quantify impact: "Expected to save $150/day"
 - Provide confidence level based on data quality
 - Consider the business owner's goals and constraints
+- Reference their brand voice when suggesting content
+- Consider their target audience in all recommendations
 
 For retargeting:
 - Create audiences from website visitors, app users, and customer lists
