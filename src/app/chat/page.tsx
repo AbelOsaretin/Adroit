@@ -12,10 +12,20 @@ import { Button } from '@/components/ui/button'
 
 function Chat() {
   const [input, setInput] = useState<string>('')
+  const [userId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('adroit-user-id') || `user-${Date.now()}`
+    }
+    return 'default-user'
+  })
 
   const { messages, setMessages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
+      body: {
+        userId,
+        threadId: `thread-${userId}`,
+      },
     }),
   })
 

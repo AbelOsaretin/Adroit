@@ -9,6 +9,6 @@ export const mastra = new Mastra({
   workflows: { approvalQueueWorkflow, campaignExecutorWorkflow },
   storage: new LibSQLStore({
     id: "mastra-storage",
-    url: ":memory:",
+    url: "file:./mastra.db",
   }),
 });
