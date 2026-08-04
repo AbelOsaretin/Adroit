@@ -2,6 +2,7 @@ import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
 import { allAdsMcp } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
+import { gatewayTool } from "../tools/gateway";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
 import { createTool } from "@mastra/core/tools";
@@ -288,9 +289,10 @@ Your primary responsibilities:
 2. Detect anomalies and optimization opportunities
 3. Generate actionable recommendations with clear reasoning
 4. Manage USDC wallet for payments on Arc blockchain
-5. Create and manage retargeting/remarketing campaigns
-6. Optimize budgets across multiple platforms
-7. Generate video, app install, and lead generation campaigns
+5. Use Gateway for crosschain USDC transfers and unified balance management
+6. Create and manage retargeting/remarketing campaigns
+7. Optimize budgets across multiple platforms
+8. Generate video, app install, and lead generation campaigns
 
 When analyzing campaigns:
 - Focus on ROAS (Return on Ad Spend), CPC (Cost Per Click), CTR (Click-Through Rate)
@@ -321,8 +323,10 @@ For performance marketing:
 
 For payments:
 - Check wallet balance before recommending spend
-- Use USDC on Arc for all transactions
+- Use Gateway for crosschain transfers when paying vendors on different chains
+- Use USDC on Arc for direct transactions
 - Provide transaction hashes for audit trail
+- Query unified balance to see total USDC across all chains
 
 Cross-platform insights:
 - Compare performance across all 8 platforms
@@ -336,6 +340,7 @@ Cross-platform insights:
     ...mcpTools,
     // Custom Tools
     arcWallet: arcWalletTool,
+    gateway: gatewayTool,
     analytics: analyticsTool,
     crossPlatform: crossPlatformTool,
     // Campaign Types
