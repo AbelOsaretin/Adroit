@@ -5,10 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Home,
-  BarChart2,
-  FileText,
-  Search,
-  Share2,
   MessagesSquare,
   Settings,
   HelpCircle,
@@ -29,10 +25,6 @@ const navigation = [
   { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
   { name: "Gateway", href: "/dashboard/gateway", icon: Globe },
   { name: "Services", href: "/dashboard/services", icon: Store },
-  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2, disabled: true },
-  { name: "Content", href: "/dashboard/content", icon: FileText, disabled: true },
-  { name: "SEO", href: "/dashboard/seo", icon: Search, disabled: true },
-  { name: "Social Media", href: "/dashboard/social", icon: Share2, disabled: true },
   { name: "Chat", href: "/dashboard/chat", icon: MessagesSquare },
 ]
 
@@ -118,7 +110,7 @@ export function Sidebar() {
               </Button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1">
             <nav className="flex flex-col space-y-1 px-2 py-4">
               {navigation.map((item) => (
                 <NavItem key={item.name} item={item} />
