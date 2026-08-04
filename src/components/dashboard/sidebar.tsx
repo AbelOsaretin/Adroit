@@ -52,7 +52,7 @@ export function Sidebar() {
         <Link
           href={item.disabled ? "#" : item.href}
           className={cn(
-            "flex items-center w-full rounded-md px-3 py-2 text-sm font-medium transition-colors",
+            "flex items-center w-full rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
             pathname === item.href
               ? "bg-secondary text-secondary-foreground"
               : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground",
@@ -61,7 +61,7 @@ export function Sidebar() {
           )}
           onClick={(e) => item.disabled && e.preventDefault()}
         >
-          <item.icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
+          <item.icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-2")} />
           {!isCollapsed && (
             <span className="flex items-center gap-2 truncate">
               {item.name}
@@ -96,15 +96,15 @@ export function Sidebar() {
         <div
           className={cn(
             "fixed inset-y-0 z-20 flex flex-col bg-background transition-all duration-300 ease-in-out lg:static",
-            isCollapsed ? "w-[72px]" : "w-72",
+            isCollapsed ? "w-[60px]" : "w-56",
             isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
           <div className="border-b border-border">
-            <div className={cn("flex h-16 items-center gap-2 px-4", isCollapsed && "justify-center px-2")}>
+            <div className={cn("flex h-12 items-center gap-2 px-3", isCollapsed && "justify-center px-2")}>
               {!isCollapsed && (
                 <Link href="/" className="flex items-center font-semibold">
-                  <span className="text-lg">Adroit<span className="text-blue-500">.</span></span>
+                  <span className="text-base">Adroit<span className="text-blue-500">.</span></span>
                 </Link>
               )}
               <Button
