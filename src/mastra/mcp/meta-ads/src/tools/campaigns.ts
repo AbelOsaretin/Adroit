@@ -1,7 +1,7 @@
 import { getAdAccount, Campaign as CampaignClass } from '../sdk';
 
 export const getCampaignsTool = {
-  name: 'meta-ads-get-campaigns',
+  name: 'meta-get-campaigns',
   description: 'Get all campaigns from a Meta Ads account',
   inputSchema: {
     type: 'object' as const,
@@ -15,7 +15,7 @@ export const getCampaignsTool = {
 };
 
 export const getCampaignMetricsTool = {
-  name: 'meta-ads-get-campaign-metrics',
+  name: 'meta-get-campaign-metrics',
   description: 'Get performance metrics for a specific campaign',
   inputSchema: {
     type: 'object' as const,
@@ -29,7 +29,7 @@ export const getCampaignMetricsTool = {
 };
 
 export const createCampaignTool = {
-  name: 'meta-ads-create-campaign',
+  name: 'meta-create-campaign',
   description: 'Create a new Meta Ads campaign',
   inputSchema: {
     type: 'object' as const,
@@ -50,7 +50,7 @@ export const createCampaignTool = {
 };
 
 export const pauseCampaignTool = {
-  name: 'meta-ads-pause-campaign',
+  name: 'meta-pause-campaign',
   description: 'Pause a Meta Ads campaign',
   inputSchema: {
     type: 'object' as const,
@@ -63,7 +63,7 @@ export const pauseCampaignTool = {
 };
 
 export const activateCampaignTool = {
-  name: 'meta-ads-activate-campaign',
+  name: 'meta-activate-campaign',
   description: 'Activate (unpause) a Meta Ads campaign',
   inputSchema: {
     type: 'object' as const,
@@ -76,7 +76,7 @@ export const activateCampaignTool = {
 };
 
 export const updateCampaignBudgetTool = {
-  name: 'meta-ads-update-campaign-budget',
+  name: 'meta-update-campaign-budget',
   description: 'Update campaign daily budget',
   inputSchema: {
     type: 'object' as const,
@@ -90,7 +90,7 @@ export const updateCampaignBudgetTool = {
 };
 
 export const deleteCampaignTool = {
-  name: 'meta-ads-delete-campaign',
+  name: 'meta-delete-campaign',
   description: 'Delete a Meta Ads campaign',
   inputSchema: {
     type: 'object' as const,
@@ -103,7 +103,7 @@ export const deleteCampaignTool = {
 };
 
 export const getCampaignAdSetsTool = {
-  name: 'meta-ads-get-campaign-adsets',
+  name: 'meta-get-campaign-adsets',
   description: 'Get all ad sets for a specific campaign',
   inputSchema: {
     type: 'object' as const,
@@ -116,7 +116,7 @@ export const getCampaignAdSetsTool = {
 };
 
 export const getCampaignAdsTool = {
-  name: 'meta-ads-get-campaign-ads',
+  name: 'meta-get-campaign-ads',
   description: 'Get all ads for a specific campaign',
   inputSchema: {
     type: 'object' as const,

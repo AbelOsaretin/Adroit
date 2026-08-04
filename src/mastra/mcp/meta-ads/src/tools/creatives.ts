@@ -1,7 +1,7 @@
 import { getAdAccount, AdCreative, AdImage, AdVideo } from '../sdk';
 
 export const getAdCreativesTool = {
-  name: 'meta-ads-get-ad-creatives',
+  name: 'meta-get-ad-creatives',
   description: 'Get all ad creatives from an account',
   inputSchema: {
     type: 'object' as const,
@@ -14,7 +14,7 @@ export const getAdCreativesTool = {
 };
 
 export const createAdCreativeTool = {
-  name: 'meta-ads-create-ad-creative',
+  name: 'meta-create-ad-creative',
   description: 'Create a new ad creative with image or video',
   inputSchema: {
     type: 'object' as const,
@@ -34,7 +34,7 @@ export const createAdCreativeTool = {
 };
 
 export const createAdCreativeFromPostTool = {
-  name: 'meta-ads-create-creative-from-post',
+  name: 'meta-create-creative-from-post',
   description: 'Create an ad creative from an existing page post',
   inputSchema: {
     type: 'object' as const,
@@ -49,7 +49,7 @@ export const createAdCreativeFromPostTool = {
 };
 
 export const deleteAdCreativeTool = {
-  name: 'meta-ads-delete-ad-creative',
+  name: 'meta-delete-ad-creative',
   description: 'Delete an ad creative',
   inputSchema: {
     type: 'object' as const,
@@ -61,7 +61,7 @@ export const deleteAdCreativeTool = {
 };
 
 export const uploadAdImageTool = {
-  name: 'meta-ads-upload-ad-image',
+  name: 'meta-upload-ad-image',
   description: 'Upload an image for ad creatives',
   inputSchema: {
     type: 'object' as const,
@@ -75,7 +75,7 @@ export const uploadAdImageTool = {
 };
 
 export const uploadAdVideoTool = {
-  name: 'meta-ads-upload-ad-video',
+  name: 'meta-upload-ad-video',
   description: 'Upload a video for ad creatives',
   inputSchema: {
     type: 'object' as const,

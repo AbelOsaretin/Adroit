@@ -84,7 +84,7 @@ import {
 } from "./tools/creatives.js";
 
 const server = new Server(
-  { name: "meta-ads-mcp", version: "0.2.0" },
+  { name: "meta-mcp", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -143,110 +143,110 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     switch (name) {
       // Campaigns
-      case "meta-ads-get-campaigns":
+      case "meta-get-campaigns":
         result = await executeGetCampaigns(args, accessToken);
         break;
-      case "meta-ads-get-campaign-metrics":
+      case "meta-get-campaign-metrics":
         result = await executeGetCampaignMetrics(args, accessToken);
         break;
-      case "meta-ads-create-campaign":
+      case "meta-create-campaign":
         result = await executeCreateCampaign(args, accessToken);
         break;
-      case "meta-ads-pause-campaign":
+      case "meta-pause-campaign":
         result = await executePauseCampaign(args, accessToken);
         break;
-      case "meta-ads-activate-campaign":
+      case "meta-activate-campaign":
         result = await executeActivateCampaign(args, accessToken);
         break;
-      case "meta-ads-update-campaign-budget":
+      case "meta-update-campaign-budget":
         result = await executeUpdateCampaignBudget(args, accessToken);
         break;
-      case "meta-ads-delete-campaign":
+      case "meta-delete-campaign":
         result = await executeDeleteCampaign(args, accessToken);
         break;
-      case "meta-ads-get-campaign-adsets":
+      case "meta-get-campaign-adsets":
         result = await executeGetCampaignAdSets(args, accessToken);
         break;
-      case "meta-ads-get-campaign-ads":
+      case "meta-get-campaign-ads":
         result = await executeGetCampaignAds(args, accessToken);
         break;
       // Ad Sets
-      case "meta-ads-get-adsets":
+      case "meta-get-adsets":
         result = await executeGetAdSets(args, accessToken);
         break;
-      case "meta-ads-create-adset":
+      case "meta-create-adset":
         result = await executeCreateAdSet(args, accessToken);
         break;
-      case "meta-ads-pause-adset":
+      case "meta-pause-adset":
         result = await executePauseAdSet(args, accessToken);
         break;
-      case "meta-ads-activate-adset":
+      case "meta-activate-adset":
         result = await executeActivateAdSet(args, accessToken);
         break;
-      case "meta-ads-update-adset-budget":
+      case "meta-update-adset-budget":
         result = await executeUpdateAdSetBudget(args, accessToken);
         break;
-      case "meta-ads-get-adset-insights":
+      case "meta-get-adset-insights":
         result = await executeGetAdSetInsights(args, accessToken);
         break;
-      case "meta-ads-get-adset-ads":
+      case "meta-get-adset-ads":
         result = await executeGetAdSetAds(args, accessToken);
         break;
       // Custom Audiences
-      case "meta-ads-get-custom-audiences":
+      case "meta-get-custom-audiences":
         result = await executeGetCustomAudiences(args, accessToken);
         break;
-      case "meta-ads-create-custom-audience":
+      case "meta-create-custom-audience":
         result = await executeCreateCustomAudience(args, accessToken);
         break;
-      case "meta-ads-create-website-audience":
+      case "meta-create-website-audience":
         result = await executeCreateWebsiteCustomAudience(args, accessToken);
         break;
-      case "meta-ads-create-lookalike-audience":
+      case "meta-create-lookalike-audience":
         result = await executeCreateLookalikeAudience(args, accessToken);
         break;
-      case "meta-ads-delete-custom-audience":
+      case "meta-delete-custom-audience":
         result = await executeDeleteCustomAudience(args, accessToken);
         break;
-      case "meta-ads-get-audience-size":
+      case "meta-get-audience-size":
         result = await executeGetAudienceSize(args, accessToken);
         break;
       // Insights & Analytics
-      case "meta-ads-get-account-insights":
+      case "meta-get-account-insights":
         result = await executeGetAccountInsights(args, accessToken);
         break;
-      case "meta-ads-get-campaign-insights":
+      case "meta-get-campaign-insights":
         result = await executeGetCampaignInsights(args, accessToken);
         break;
-      case "meta-ads-detect-anomalies":
+      case "meta-detect-anomalies":
         result = await executeDetectAnomalies(args, accessToken);
         break;
-      case "meta-ads-calculate-roas":
+      case "meta-calculate-roas":
         result = await executeCalculateROAS(args, accessToken);
         break;
-      case "meta-ads-compare-periods":
+      case "meta-compare-periods":
         result = await executeComparePeriods(args, accessToken);
         break;
-      case "meta-ads-get-reach-estimate":
+      case "meta-get-reach-estimate":
         result = await executeGetReachEstimate(args, accessToken);
         break;
       // Ad Creatives
-      case "meta-ads-get-ad-creatives":
+      case "meta-get-ad-creatives":
         result = await executeGetAdCreatives(args, accessToken);
         break;
-      case "meta-ads-create-ad-creative":
+      case "meta-create-ad-creative":
         result = await executeCreateAdCreative(args, accessToken);
         break;
-      case "meta-ads-create-creative-from-post":
+      case "meta-create-creative-from-post":
         result = await executeCreateAdCreativeFromPost(args, accessToken);
         break;
-      case "meta-ads-delete-ad-creative":
+      case "meta-delete-ad-creative":
         result = await executeDeleteAdCreative(args, accessToken);
         break;
-      case "meta-ads-upload-ad-image":
+      case "meta-upload-ad-image":
         result = await executeUploadAdImage(args, accessToken);
         break;
-      case "meta-ads-upload-ad-video":
+      case "meta-upload-ad-video":
         result = await executeUploadAdVideo(args, accessToken);
         break;
       default:

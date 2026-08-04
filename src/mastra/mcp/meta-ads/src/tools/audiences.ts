@@ -1,7 +1,7 @@
 import { getAdAccount, CustomAudience } from '../sdk';
 
 export const getCustomAudiencesTool = {
-  name: 'meta-ads-get-custom-audiences',
+  name: 'meta-get-custom-audiences',
   description: 'Get all custom audiences from an account',
   inputSchema: {
     type: 'object' as const,
@@ -14,7 +14,7 @@ export const getCustomAudiencesTool = {
 };
 
 export const createCustomAudienceTool = {
-  name: 'meta-ads-create-custom-audience',
+  name: 'meta-create-custom-audience',
   description: 'Create a custom audience for retargeting',
   inputSchema: {
     type: 'object' as const,
@@ -30,7 +30,7 @@ export const createCustomAudienceTool = {
 };
 
 export const createWebsiteCustomAudienceTool = {
-  name: 'meta-ads-create-website-audience',
+  name: 'meta-create-website-audience',
   description: 'Create a website custom audience for retargeting website visitors',
   inputSchema: {
     type: 'object' as const,
@@ -46,7 +46,7 @@ export const createWebsiteCustomAudienceTool = {
 };
 
 export const createLookalikeAudienceTool = {
-  name: 'meta-ads-create-lookalike-audience',
+  name: 'meta-create-lookalike-audience',
   description: 'Create a lookalike audience based on a source audience',
   inputSchema: {
     type: 'object' as const,
@@ -63,7 +63,7 @@ export const createLookalikeAudienceTool = {
 };
 
 export const deleteCustomAudienceTool = {
-  name: 'meta-ads-delete-custom-audience',
+  name: 'meta-delete-custom-audience',
   description: 'Delete a custom audience',
   inputSchema: {
     type: 'object' as const,
@@ -75,7 +75,7 @@ export const deleteCustomAudienceTool = {
 };
 
 export const getAudienceSizeTool = {
-  name: 'meta-ads-get-audience-size',
+  name: 'meta-get-audience-size',
   description: 'Get the estimated size of a custom audience',
   inputSchema: {
     type: 'object' as const,

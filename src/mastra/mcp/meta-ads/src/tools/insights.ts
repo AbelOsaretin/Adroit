@@ -1,7 +1,7 @@
 import { getAdAccount } from '../sdk';
 
 export const getAccountInsightsTool = {
-  name: 'meta-ads-get-account-insights',
+  name: 'meta-get-account-insights',
   description: 'Get performance insights for an ad account',
   inputSchema: {
     type: 'object' as const,
@@ -16,7 +16,7 @@ export const getAccountInsightsTool = {
 };
 
 export const getCampaignInsightsTool = {
-  name: 'meta-ads-get-campaign-insights',
+  name: 'meta-get-campaign-insights',
   description: 'Get insights for all campaigns in an account',
   inputSchema: {
     type: 'object' as const,
@@ -31,7 +31,7 @@ export const getCampaignInsightsTool = {
 };
 
 export const detectAnomaliesTool = {
-  name: 'meta-ads-detect-anomalies',
+  name: 'meta-detect-anomalies',
   description: 'Detect performance anomalies in campaigns',
   inputSchema: {
     type: 'object' as const,
@@ -44,7 +44,7 @@ export const detectAnomaliesTool = {
 };
 
 export const calculateROASTool = {
-  name: 'meta-ads-calculate-roas',
+  name: 'meta-calculate-roas',
   description: 'Calculate Return on Ad Spend for campaigns',
   inputSchema: {
     type: 'object' as const,
@@ -58,7 +58,7 @@ export const calculateROASTool = {
 };
 
 export const comparePeriodsTool = {
-  name: 'meta-ads-compare-periods',
+  name: 'meta-compare-periods',
   description: 'Compare performance between two time periods',
   inputSchema: {
     type: 'object' as const,
@@ -72,7 +72,7 @@ export const comparePeriodsTool = {
 };
 
 export const getReachEstimateTool = {
-  name: 'meta-ads-get-reach-estimate',
+  name: 'meta-get-reach-estimate',
   description: 'Get reach estimate for a targeting specification',
   inputSchema: {
     type: 'object' as const,

@@ -1,7 +1,7 @@
 import { getAdAccount, AdSet } from '../sdk';
 
 export const getAdSetsTool = {
-  name: 'meta-ads-get-adsets',
+  name: 'meta-get-adsets',
   description: 'Get all ad sets from a Meta Ads account',
   inputSchema: {
     type: 'object' as const,
@@ -15,7 +15,7 @@ export const getAdSetsTool = {
 };
 
 export const createAdSetTool = {
-  name: 'meta-ads-create-adset',
+  name: 'meta-create-adset',
   description: 'Create a new ad set with targeting options',
   inputSchema: {
     type: 'object' as const,
@@ -33,7 +33,7 @@ export const createAdSetTool = {
 };
 
 export const pauseAdSetTool = {
-  name: 'meta-ads-pause-adset',
+  name: 'meta-pause-adset',
   description: 'Pause an ad set',
   inputSchema: {
     type: 'object' as const,
@@ -45,7 +45,7 @@ export const pauseAdSetTool = {
 };
 
 export const activateAdSetTool = {
-  name: 'meta-ads-activate-adset',
+  name: 'meta-activate-adset',
   description: 'Activate an ad set',
   inputSchema: {
     type: 'object' as const,
@@ -57,7 +57,7 @@ export const activateAdSetTool = {
 };
 
 export const updateAdSetBudgetTool = {
-  name: 'meta-ads-update-adset-budget',
+  name: 'meta-update-adset-budget',
   description: 'Update ad set daily budget',
   inputSchema: {
     type: 'object' as const,
@@ -70,7 +70,7 @@ export const updateAdSetBudgetTool = {
 };
 
 export const getAdSetInsightsTool = {
-  name: 'meta-ads-get-adset-insights',
+  name: 'meta-get-adset-insights',
   description: 'Get performance insights for an ad set',
   inputSchema: {
     type: 'object' as const,
@@ -83,7 +83,7 @@ export const getAdSetInsightsTool = {
 };
 
 export const getAdSetAdsTool = {
-  name: 'meta-ads-get-adset-ads',
+  name: 'meta-get-adset-ads',
   description: 'Get all ads in an ad set',
   inputSchema: {
     type: 'object' as const,
