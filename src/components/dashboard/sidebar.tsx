@@ -95,7 +95,7 @@ export function Sidebar() {
         </button>
         <div
           className={cn(
-            "fixed inset-y-0 z-20 flex flex-col bg-background transition-all duration-300 ease-in-out lg:static",
+            "fixed inset-y-0 z-20 flex flex-col bg-background transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen",
             isCollapsed ? "w-[60px]" : "w-56",
             isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
