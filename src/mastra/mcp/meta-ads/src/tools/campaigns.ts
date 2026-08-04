@@ -1,5 +1,16 @@
 import { getAdAccount, Campaign as CampaignClass } from '../sdk';
 
+function serializeSdkObject(obj: any) {
+  if (obj && obj._data) {
+    return obj._data;
+  }
+  return obj;
+}
+
+function serializeSdkArray(arr: any[]) {
+  return arr.map(serializeSdkObject);
+}
+
 export const getCampaignsTool = {
   name: 'meta-get-campaigns',
   description: 'Get all campaigns from a Meta Ads account',
@@ -131,13 +142,13 @@ export const getCampaignAdsTool = {
 // Execute functions
 export async function executeGetCampaigns(args: any, accessToken: string) {
   const account = getAdAccount(args.accountId, accessToken);
-  const fields = ['name', 'objective', 'status', 'effective_status', 'daily_budget', 'created_time', 'updated_time'];
+  const fields = ['id', 'name', 'objective', 'status', 'effective_status', 'daily_budget', 'created_time', 'updated_time'];
   const params: any = { limit: args.limit || 25 };
   if (args.status && args.status !== 'ALL') {
     params.effective_status = args.status;
   }
   const campaigns = await account.getCampaigns(fields, params);
-  return campaigns.map((c: any) => c.exportAll());
+  return serializeSdkArray(campaigns);
 }
 
 export async function executeGetCampaignMetrics(args: any, accessToken: string) {
@@ -146,7 +157,7 @@ export async function executeGetCampaignMetrics(args: any, accessToken: string) 
     date_preset: args.datePreset || 'last_30d',
     fields: ['impressions', 'clicks', 'spend', 'actions', 'ctr', 'cpc', 'cpp', 'reach', 'frequency'],
   });
-  return insights;
+  return serializeSdkArray(insights);
 }
 
 export async function executeCreateCampaign(args: any, accessToken: string) {
@@ -161,7 +172,7 @@ export async function executeCreateCampaign(args: any, accessToken: string) {
     params.daily_budget = args.dailyBudget.toString();
   }
   const campaign = await account.createCampaign([], params);
-  return campaign.exportAll();
+  return serializeSdkObject(campaign);
 }
 
 export async function executePauseCampaign(args: any, accessToken: string) {
@@ -191,11 +202,11 @@ export async function executeDeleteCampaign(args: any, accessToken: string) {
 export async function executeGetCampaignAdSets(args: any, accessToken: string) {
   const campaign = new CampaignClass(args.campaignId);
   const adSets = await campaign.getAdSets(['name', 'status', 'effective_status', 'daily_budget', 'bid_strategy']);
-  return adSets.map((a: any) => a.exportAll());
+  return serializeSdkArray(adSets);
 }
 
 export async function executeGetCampaignAds(args: any, accessToken: string) {
   const campaign = new CampaignClass(args.campaignId);
   const ads = await campaign.getAds(['name', 'status', 'effective_status', 'adset_id', 'creative']);
-  return ads.map((a: any) => a.exportAll());
+  return serializeSdkArray(ads);
 }
