@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Megaphone, FileText, Search, Share2, TrendingUp, DollarSign, MousePointerClick, ArrowUpRight } from "lucide-react"
+import { Megaphone, FileText, Search, Share2, TrendingUp, DollarSign, MousePointerClick, ArrowUpRight, Wallet, Globe, Store } from "lucide-react"
 import Link from "next/link"
 
 const services = [
@@ -10,6 +10,27 @@ const services = [
     description: "Manage your ad campaigns across Google, Meta, and more",
     icon: Megaphone,
     href: "/dashboard/campaigns",
+    disabled: false,
+  },
+  {
+    title: "Wallet",
+    description: "Manage your USDC wallet and send payments",
+    icon: Wallet,
+    href: "/dashboard/wallet",
+    disabled: false,
+  },
+  {
+    title: "Gateway",
+    description: "Unified USDC balance across chains with instant transfers",
+    icon: Globe,
+    href: "/dashboard/gateway",
+    disabled: false,
+  },
+  {
+    title: "Services",
+    description: "Sell your AI marketing services to other agents",
+    icon: Store,
+    href: "/dashboard/services",
     disabled: false,
   },
   {
