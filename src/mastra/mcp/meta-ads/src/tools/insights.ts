@@ -1,5 +1,16 @@
 import { getAdAccount } from '../sdk';
 
+function serializeSdkObject(obj: any) {
+  if (obj && obj._data) {
+    return obj._data;
+  }
+  return obj;
+}
+
+function serializeSdkArray(arr: any[]) {
+  return arr.map(serializeSdkObject);
+}
+
 export const getAccountInsightsTool = {
   name: 'meta-get-account-insights',
   description: 'Get performance insights for an ad account',
@@ -95,7 +106,7 @@ export async function executeGetAccountInsights(args: any, accessToken: string) 
   if (args.breakdowns) params.breakdowns = args.breakdowns;
   if (args.level) params.level = args.level;
   const insights = await account.getInsights(params);
-  return insights;
+  return serializeSdkArray(insights);
 }
 
 export async function executeGetCampaignInsights(args: any, accessToken: string) {
@@ -107,7 +118,7 @@ export async function executeGetCampaignInsights(args: any, accessToken: string)
   if (args.breakdowns) params.breakdowns = args.breakdowns;
   if (args.campaignIds) params.filtering = [{ field: 'campaign.id', operator: 'IN', value: args.campaignIds }];
   const insights = await account.getInsights(params);
-  return insights;
+  return serializeSdkArray(insights);
 }
 
 export async function executeDetectAnomalies(args: any, accessToken: string) {

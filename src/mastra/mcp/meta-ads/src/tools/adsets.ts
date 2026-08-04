@@ -1,5 +1,16 @@
 import { getAdAccount, AdSet } from '../sdk';
 
+function serializeSdkObject(obj: any) {
+  if (obj && obj._data) {
+    return obj._data;
+  }
+  return obj;
+}
+
+function serializeSdkArray(arr: any[]) {
+  return arr.map(serializeSdkObject);
+}
+
 export const getAdSetsTool = {
   name: 'meta-get-adsets',
   description: 'Get all ad sets from a Meta Ads account',
@@ -103,7 +114,7 @@ export async function executeGetAdSets(args: any, accessToken: string) {
     params.effective_status = args.status;
   }
   const adSets = await account.getAdSets(fields, params);
-  return adSets;
+  return serializeSdkArray(adSets);
 }
 
 export async function executeCreateAdSet(args: any, accessToken: string) {
@@ -117,7 +128,7 @@ export async function executeCreateAdSet(args: any, accessToken: string) {
     targeting: args.targeting || { geo_locations: { countries: ['US'] } },
   };
   const adSet = await account.createAdSet([], params);
-  return adSet;
+  return serializeSdkObject(adSet);
 }
 
 export async function executePauseAdSet(args: any, accessToken: string) {
@@ -144,11 +155,11 @@ export async function executeGetAdSetInsights(args: any, accessToken: string) {
     date_preset: args.datePreset || 'last_30d',
     fields: ['impressions', 'clicks', 'spend', 'actions', 'ctr', 'cpc', 'reach', 'frequency', 'cost_per_action_type'],
   });
-  return insights;
+  return serializeSdkArray(insights);
 }
 
 export async function executeGetAdSetAds(args: any, accessToken: string) {
   const adSet = new AdSet(args.adSetId);
   const ads = await adSet.getAds(['name', 'status', 'effective_status', 'creative']);
-  return ads;
+  return serializeSdkArray(ads);
 }
