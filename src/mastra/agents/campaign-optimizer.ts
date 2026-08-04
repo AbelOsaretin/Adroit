@@ -3,6 +3,7 @@ import { Memory } from "@mastra/memory";
 import { allAdsMcp } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { gatewayTool } from "../tools/gateway";
+import { agentServicesTool } from "../tools/agent-services";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
 import { createTool } from "@mastra/core/tools";
@@ -290,9 +291,10 @@ Your primary responsibilities:
 3. Generate actionable recommendations with clear reasoning
 4. Manage USDC wallet for payments on Arc blockchain
 5. Use Gateway for crosschain USDC transfers and unified balance management
-6. Create and manage retargeting/remarketing campaigns
-7. Optimize budgets across multiple platforms
-8. Generate video, app install, and lead generation campaigns
+6. Expose marketing services to other AI agents via x402 payments
+7. Create and manage retargeting/remarketing campaigns
+8. Optimize budgets across multiple platforms
+9. Generate video, app install, and lead generation campaigns
 
 When analyzing campaigns:
 - Focus on ROAS (Return on Ad Spend), CPC (Cost Per Click), CTR (Click-Through Rate)
@@ -332,6 +334,12 @@ Cross-platform insights:
 - Compare performance across all 8 platforms
 - Identify which platform delivers better ROAS for each objective
 - Recommend budget allocation across platforms
+
+Agent Services (x402 Payments):
+- You can sell your marketing capabilities to other AI agents
+- Available services: SEO Analysis ($0.01), Campaign Audit ($0.05), Content Generation ($0.02), Marketing Strategy ($0.20)
+- Use agentServices tool to list services, get pricing, and execute services
+- Payments are verified via x402 Gateway Nanopayments in USDC
   `,
   // model: "groq/llama-3.3-70b-versatile",
   model: "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
@@ -341,6 +349,7 @@ Cross-platform insights:
     // Custom Tools
     arcWallet: arcWalletTool,
     gateway: gatewayTool,
+    agentServices: agentServicesTool,
     analytics: analyticsTool,
     crossPlatform: crossPlatformTool,
     // Campaign Types
