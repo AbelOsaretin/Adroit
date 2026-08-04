@@ -4,42 +4,130 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { metaApiRequest, MetaAuthConfig } from "./auth/meta.js";
 import {
-  get_campaigns,
-  get_campaign_metrics,
-  pause_campaign,
-  activate_campaign,
-  update_budget,
-  create_campaign,
+  getCampaignsTool,
+  getCampaignMetricsTool,
+  createCampaignTool,
+  pauseCampaignTool,
+  activateCampaignTool,
+  updateCampaignBudgetTool,
+  deleteCampaignTool,
+  getCampaignAdSetsTool,
+  getCampaignAdsTool,
+  executeGetCampaigns,
+  executeGetCampaignMetrics,
+  executeCreateCampaign,
+  executePauseCampaign,
+  executeActivateCampaign,
+  executeUpdateCampaignBudget,
+  executeDeleteCampaign,
+  executeGetCampaignAdSets,
+  executeGetCampaignAds,
 } from "./tools/campaigns.js";
 import {
-  get_performance_report,
-  get_insights,
-} from "./tools/reports.js";
+  getAdSetsTool,
+  createAdSetTool,
+  pauseAdSetTool,
+  activateAdSetTool,
+  updateAdSetBudgetTool,
+  getAdSetInsightsTool,
+  getAdSetAdsTool,
+  executeGetAdSets,
+  executeCreateAdSet,
+  executePauseAdSet,
+  executeActivateAdSet,
+  executeUpdateAdSetBudget,
+  executeGetAdSetInsights,
+  executeGetAdSetAds,
+} from "./tools/adsets.js";
 import {
-  detect_anomalies,
-  calculate_roas,
-  compare_periods,
-} from "./tools/analytics.js";
+  getCustomAudiencesTool,
+  createCustomAudienceTool,
+  createWebsiteCustomAudienceTool,
+  createLookalikeAudienceTool,
+  deleteCustomAudienceTool,
+  getAudienceSizeTool,
+  executeGetCustomAudiences,
+  executeCreateCustomAudience,
+  executeCreateWebsiteCustomAudience,
+  executeCreateLookalikeAudience,
+  executeDeleteCustomAudience,
+  executeGetAudienceSize,
+} from "./tools/audiences.js";
+import {
+  getAccountInsightsTool,
+  getCampaignInsightsTool,
+  detectAnomaliesTool,
+  calculateROASTool,
+  comparePeriodsTool,
+  getReachEstimateTool,
+  executeGetAccountInsights,
+  executeGetCampaignInsights,
+  executeDetectAnomalies,
+  executeCalculateROAS,
+  executeComparePeriods,
+  executeGetReachEstimate,
+} from "./tools/insights.js";
+import {
+  getAdCreativesTool,
+  createAdCreativeTool,
+  createAdCreativeFromPostTool,
+  deleteAdCreativeTool,
+  uploadAdImageTool,
+  uploadAdVideoTool,
+  executeGetAdCreatives,
+  executeCreateAdCreative,
+  executeCreateAdCreativeFromPost,
+  executeDeleteAdCreative,
+  executeUploadAdImage,
+  executeUploadAdVideo,
+} from "./tools/creatives.js";
 
 const server = new Server(
-  { name: "meta-ads-mcp", version: "0.1.0" },
+  { name: "meta-ads-mcp", version: "0.2.0" },
   { capabilities: { tools: {} } }
 );
 
 const tools = [
-  get_campaigns,
-  get_campaign_metrics,
-  pause_campaign,
-  activate_campaign,
-  update_budget,
-  create_campaign,
-  get_performance_report,
-  get_insights,
-  detect_anomalies,
-  calculate_roas,
-  compare_periods,
+  // Campaigns
+  getCampaignsTool,
+  getCampaignMetricsTool,
+  createCampaignTool,
+  pauseCampaignTool,
+  activateCampaignTool,
+  updateCampaignBudgetTool,
+  deleteCampaignTool,
+  getCampaignAdSetsTool,
+  getCampaignAdsTool,
+  // Ad Sets
+  getAdSetsTool,
+  createAdSetTool,
+  pauseAdSetTool,
+  activateAdSetTool,
+  updateAdSetBudgetTool,
+  getAdSetInsightsTool,
+  getAdSetAdsTool,
+  // Custom Audiences
+  getCustomAudiencesTool,
+  createCustomAudienceTool,
+  createWebsiteCustomAudienceTool,
+  createLookalikeAudienceTool,
+  deleteCustomAudienceTool,
+  getAudienceSizeTool,
+  // Insights & Analytics
+  getAccountInsightsTool,
+  getCampaignInsightsTool,
+  detectAnomaliesTool,
+  calculateROASTool,
+  comparePeriodsTool,
+  getReachEstimateTool,
+  // Ad Creatives
+  getAdCreativesTool,
+  createAdCreativeTool,
+  createAdCreativeFromPostTool,
+  deleteAdCreativeTool,
+  uploadAdImageTool,
+  uploadAdVideoTool,
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -48,111 +136,129 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-
-  const rawAccountId = (args as any).accountId;
-  const accountId = rawAccountId?.startsWith("act_") ? rawAccountId : `act_${rawAccountId}`;
-
-  const config: MetaAuthConfig = {
-    accessToken: process.env.META_ACCESS_TOKEN!,
-    adAccountId: accountId,
-  };
+  const accessToken = process.env.META_ACCESS_TOKEN!;
 
   try {
+    let result: any;
+
     switch (name) {
-      case "meta-ads-get-campaigns": {
-        const campaigns = await metaApiRequest(
-          `/${accountId}/campaigns`,
-          { fields: "id,name,status,objective,daily_budget" },
-          config
-        );
-        return {
-          content: [{ type: "text", text: JSON.stringify(campaigns.data) }],
-        };
-      }
-
-      case "meta-ads-get-campaign-metrics": {
-        const metrics = await metaApiRequest(
-          `/${(args as any).campaignId}/insights`,
-          {
-            fields: "impressions,clicks,spend,actions,ctr,cpc",
-            time_range: '{"since":"2026-01-01","until":"2026-07-30"}',
-          },
-          config
-        );
-        return {
-          content: [{ type: "text", text: JSON.stringify(metrics.data) }],
-        };
-      }
-
-      case "meta-ads-pause-campaign": {
-        await metaApiRequest(
-          `/${(args as any).campaignId}`,
-          { status: "PAUSED" },
-          config,
-          "POST"
-        );
-        return {
-          content: [{ type: "text", text: JSON.stringify({ success: true, paused: (args as any).campaignId }) }],
-        };
-      }
-
-      case "meta-ads-activate-campaign": {
-        await metaApiRequest(
-          `/${(args as any).campaignId}`,
-          { status: "ACTIVE" },
-          config,
-          "POST"
-        );
-        return {
-          content: [{ type: "text", text: JSON.stringify({ success: true, activated: (args as any).campaignId }) }],
-        };
-      }
-
-      case "meta-ads-update-budget": {
-        await metaApiRequest(
-          `/${(args as any).campaignId}`,
-          { daily_budget: ((args as any).budget * 100).toString() },
-          config,
-          "POST"
-        );
-        return {
-          content: [{ type: "text", text: JSON.stringify({ success: true, updated: (args as any).campaignId, newBudget: (args as any).budget }) }],
-        };
-      }
-
-      case "meta-ads-create-campaign": {
-        const campaignResponse = await metaApiRequest(
-          `/${accountId}/campaigns`,
-          {
-            name: (args as any).name,
-            status: "PAUSED",
-            objective: (args as any).objective || "OUTCOME_TRAFFIC",
-            daily_budget: ((args as any).budget * 100).toString(),
-            special_ad_categories: "[]",
-          },
-          config
-        );
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({
-              success: true,
-              campaignId: campaignResponse.id,
-              name: (args as any).name,
-              objective: (args as any).objective,
-              status: "PAUSED",
-              dailyBudget: (args as any).budget,
-            }),
-          }],
-        };
-      }
-
+      // Campaigns
+      case "meta-ads-get-campaigns":
+        result = await executeGetCampaigns(args, accessToken);
+        break;
+      case "meta-ads-get-campaign-metrics":
+        result = await executeGetCampaignMetrics(args, accessToken);
+        break;
+      case "meta-ads-create-campaign":
+        result = await executeCreateCampaign(args, accessToken);
+        break;
+      case "meta-ads-pause-campaign":
+        result = await executePauseCampaign(args, accessToken);
+        break;
+      case "meta-ads-activate-campaign":
+        result = await executeActivateCampaign(args, accessToken);
+        break;
+      case "meta-ads-update-campaign-budget":
+        result = await executeUpdateCampaignBudget(args, accessToken);
+        break;
+      case "meta-ads-delete-campaign":
+        result = await executeDeleteCampaign(args, accessToken);
+        break;
+      case "meta-ads-get-campaign-adsets":
+        result = await executeGetCampaignAdSets(args, accessToken);
+        break;
+      case "meta-ads-get-campaign-ads":
+        result = await executeGetCampaignAds(args, accessToken);
+        break;
+      // Ad Sets
+      case "meta-ads-get-adsets":
+        result = await executeGetAdSets(args, accessToken);
+        break;
+      case "meta-ads-create-adset":
+        result = await executeCreateAdSet(args, accessToken);
+        break;
+      case "meta-ads-pause-adset":
+        result = await executePauseAdSet(args, accessToken);
+        break;
+      case "meta-ads-activate-adset":
+        result = await executeActivateAdSet(args, accessToken);
+        break;
+      case "meta-ads-update-adset-budget":
+        result = await executeUpdateAdSetBudget(args, accessToken);
+        break;
+      case "meta-ads-get-adset-insights":
+        result = await executeGetAdSetInsights(args, accessToken);
+        break;
+      case "meta-ads-get-adset-ads":
+        result = await executeGetAdSetAds(args, accessToken);
+        break;
+      // Custom Audiences
+      case "meta-ads-get-custom-audiences":
+        result = await executeGetCustomAudiences(args, accessToken);
+        break;
+      case "meta-ads-create-custom-audience":
+        result = await executeCreateCustomAudience(args, accessToken);
+        break;
+      case "meta-ads-create-website-audience":
+        result = await executeCreateWebsiteCustomAudience(args, accessToken);
+        break;
+      case "meta-ads-create-lookalike-audience":
+        result = await executeCreateLookalikeAudience(args, accessToken);
+        break;
+      case "meta-ads-delete-custom-audience":
+        result = await executeDeleteCustomAudience(args, accessToken);
+        break;
+      case "meta-ads-get-audience-size":
+        result = await executeGetAudienceSize(args, accessToken);
+        break;
+      // Insights & Analytics
+      case "meta-ads-get-account-insights":
+        result = await executeGetAccountInsights(args, accessToken);
+        break;
+      case "meta-ads-get-campaign-insights":
+        result = await executeGetCampaignInsights(args, accessToken);
+        break;
+      case "meta-ads-detect-anomalies":
+        result = await executeDetectAnomalies(args, accessToken);
+        break;
+      case "meta-ads-calculate-roas":
+        result = await executeCalculateROAS(args, accessToken);
+        break;
+      case "meta-ads-compare-periods":
+        result = await executeComparePeriods(args, accessToken);
+        break;
+      case "meta-ads-get-reach-estimate":
+        result = await executeGetReachEstimate(args, accessToken);
+        break;
+      // Ad Creatives
+      case "meta-ads-get-ad-creatives":
+        result = await executeGetAdCreatives(args, accessToken);
+        break;
+      case "meta-ads-create-ad-creative":
+        result = await executeCreateAdCreative(args, accessToken);
+        break;
+      case "meta-ads-create-creative-from-post":
+        result = await executeCreateAdCreativeFromPost(args, accessToken);
+        break;
+      case "meta-ads-delete-ad-creative":
+        result = await executeDeleteAdCreative(args, accessToken);
+        break;
+      case "meta-ads-upload-ad-image":
+        result = await executeUploadAdImage(args, accessToken);
+        break;
+      case "meta-ads-upload-ad-video":
+        result = await executeUploadAdVideo(args, accessToken);
+        break;
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${name}` }],
           isError: true,
         };
     }
+
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }],
+    };
   } catch (error) {
     return {
       content: [{
