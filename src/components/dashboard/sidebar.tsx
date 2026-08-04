@@ -15,6 +15,9 @@ import {
   Menu,
   ChevronLeft,
   Megaphone,
+  Wallet,
+  Globe,
+  Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -23,6 +26,9 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
+  { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
+  { name: "Gateway", href: "/dashboard/gateway", icon: Globe },
+  { name: "Services", href: "/dashboard/services", icon: Store },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2, disabled: true },
   { name: "Content", href: "/dashboard/content", icon: FileText, disabled: true },
   { name: "SEO", href: "/dashboard/seo", icon: Search, disabled: true },
