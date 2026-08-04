@@ -90,7 +90,7 @@ export const getAudienceSizeTool = {
 export async function executeGetCustomAudiences(args: any, accessToken: string) {
   const account = getAdAccount(args.accountId, accessToken);
   const audiences = await account.getCustomAudiences(['name', 'description', 'subtype', 'approximate_count', 'time_updated'], { limit: args.limit || 25 });
-  return audiences.map((a: any) => a.exportAll());
+  return audiences;
 }
 
 export async function executeCreateCustomAudience(args: any, accessToken: string) {
@@ -102,7 +102,7 @@ export async function executeCreateCustomAudience(args: any, accessToken: string
   };
   if (args.description) params.description = args.description;
   const audience = await account.createCustomAudience([], params);
-  return audience.exportAll();
+  return audience;
 }
 
 export async function executeCreateWebsiteCustomAudience(args: any, accessToken: string) {
@@ -121,7 +121,7 @@ export async function executeCreateWebsiteCustomAudience(args: any, accessToken:
     params.rule = JSON.stringify(args.rules);
   }
   const audience = await account.createCustomAudience([], params);
-  return audience.exportAll();
+  return audience;
 }
 
 export async function executeCreateLookalikeAudience(args: any, accessToken: string) {
@@ -134,7 +134,7 @@ export async function executeCreateLookalikeAudience(args: any, accessToken: str
     end_ratio: args.endRatio || 0.01,
   };
   const audience = await account.createLookalike([], params);
-  return audience.exportAll();
+  return audience;
 }
 
 export async function executeDeleteCustomAudience(args: any, accessToken: string) {

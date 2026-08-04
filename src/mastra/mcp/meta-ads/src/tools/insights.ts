@@ -95,7 +95,7 @@ export async function executeGetAccountInsights(args: any, accessToken: string) 
   if (args.breakdowns) params.breakdowns = args.breakdowns;
   if (args.level) params.level = args.level;
   const insights = await account.getInsights(params);
-  return insights.map((i: any) => i.exportAll());
+  return insights;
 }
 
 export async function executeGetCampaignInsights(args: any, accessToken: string) {
@@ -107,7 +107,7 @@ export async function executeGetCampaignInsights(args: any, accessToken: string)
   if (args.breakdowns) params.breakdowns = args.breakdowns;
   if (args.campaignIds) params.filtering = [{ field: 'campaign.id', operator: 'IN', value: args.campaignIds }];
   const insights = await account.getInsights(params);
-  return insights.map((i: any) => i.exportAll());
+  return insights;
 }
 
 export async function executeDetectAnomalies(args: any, accessToken: string) {
@@ -164,7 +164,7 @@ export async function executeCalculateROAS(args: any, accessToken: string) {
   const defaultConversionValue = args.conversionValue || 50;
 
   return insights.map((i: any) => {
-    const data = i.exportAll();
+    const data = i;
     const spend = parseFloat(data.spend) || 0;
     const conversions = data.actions?.find((a: any) => a.action_type === 'offsite_conversion')?.value || 0;
     const revenue = conversions * defaultConversionValue;
@@ -191,7 +191,7 @@ export async function executeComparePeriods(args: any, accessToken: string) {
     fields: ['spend', 'impressions', 'clicks', 'actions'],
   });
 
-  const sumField = (data: any[], field: string) => data.reduce((sum, i) => sum + (parseFloat((i.exportAll())[field]) || 0), 0);
+  const sumField = (data: any[], field: string) => data.reduce((sum, i) => sum + (parseFloat((i)[field]) || 0), 0);
 
   const current = {
     spend: sumField(currentInsights, 'spend'),

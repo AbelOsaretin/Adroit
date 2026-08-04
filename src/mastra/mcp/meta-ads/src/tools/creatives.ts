@@ -93,7 +93,7 @@ export const uploadAdVideoTool = {
 export async function executeGetAdCreatives(args: any, accessToken: string) {
   const account = getAdAccount(args.accountId, accessToken);
   const creatives = await account.getAdCreatives(['name', 'title', 'body', 'image_url', 'video_id', 'link_url', 'object_story_spec'], { limit: args.limit || 25 });
-  return creatives.map((c: any) => c.exportAll());
+  return creatives;
 }
 
 export async function executeCreateAdCreative(args: any, accessToken: string) {
@@ -117,7 +117,7 @@ export async function executeCreateAdCreative(args: any, accessToken: string) {
     };
   }
   const creative = await account.createAdCreative([], params);
-  return creative.exportAll();
+  return creative;
 }
 
 export async function executeCreateAdCreativeFromPost(args: any, accessToken: string) {
@@ -132,7 +132,7 @@ export async function executeCreateAdCreativeFromPost(args: any, accessToken: st
     },
   };
   const creative = await account.createAdCreative([], params);
-  return creative.exportAll();
+  return creative;
 }
 
 export async function executeDeleteAdCreative(args: any, accessToken: string) {
@@ -147,7 +147,7 @@ export async function executeUploadAdImage(args: any, accessToken: string) {
     filename: args.filename || 'ad_image.jpg',
     url: args.imageUrl,
   });
-  return image.exportAll();
+  return image;
 }
 
 export async function executeUploadAdVideo(args: any, accessToken: string) {
@@ -157,5 +157,5 @@ export async function executeUploadAdVideo(args: any, accessToken: string) {
     title: args.title,
     description: args.description,
   });
-  return video.exportAll();
+  return video;
 }

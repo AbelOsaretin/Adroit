@@ -137,7 +137,7 @@ export async function executeGetCampaigns(args: any, accessToken: string) {
     params.effective_status = args.status;
   }
   const campaigns = await account.getCampaigns(fields, params);
-  return campaigns.map((c: any) => c.exportAll());
+  return campaigns;
 }
 
 export async function executeGetCampaignMetrics(args: any, accessToken: string) {
@@ -161,7 +161,7 @@ export async function executeCreateCampaign(args: any, accessToken: string) {
     params.daily_budget = args.dailyBudget.toString();
   }
   const campaign = await account.createCampaign([], params);
-  return campaign.exportAll();
+  return campaign;
 }
 
 export async function executePauseCampaign(args: any, accessToken: string) {
@@ -191,11 +191,11 @@ export async function executeDeleteCampaign(args: any, accessToken: string) {
 export async function executeGetCampaignAdSets(args: any, accessToken: string) {
   const campaign = new CampaignClass(args.campaignId);
   const adSets = await campaign.getAdSets(['name', 'status', 'effective_status', 'daily_budget', 'bid_strategy']);
-  return adSets.map((a: any) => a.exportAll());
+  return adSets;
 }
 
 export async function executeGetCampaignAds(args: any, accessToken: string) {
   const campaign = new CampaignClass(args.campaignId);
   const ads = await campaign.getAds(['name', 'status', 'effective_status', 'adset_id', 'creative']);
-  return ads.map((a: any) => a.exportAll());
+  return ads;
 }
