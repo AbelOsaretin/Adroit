@@ -6,8 +6,6 @@ import { gatewayTool } from "../tools/gateway";
 import { agentServicesTool } from "../tools/agent-services";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
-import { createTool } from "@mastra/core/tools";
-import { z } from "zod";
 import {
   create_video_campaign,
   get_video_performance,
@@ -75,201 +73,6 @@ const memory = new Memory({
 
 // Get tools from MCP servers and add custom tools
 const mcpTools = await allAdsMcp.listTools();
-
-// Wrap tool definitions as Mastra tools
-const videoCampaignTool = createTool({
-  id: create_video_campaign.name,
-  description: create_video_campaign.description,
-  inputSchema: create_video_campaign.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_video_campaign.name, inputData),
-});
-
-const videoPerformanceTool = createTool({
-  id: get_video_performance.name,
-  description: get_video_performance.description,
-  inputSchema: get_video_performance.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(get_video_performance.name, inputData),
-});
-
-const appInstallCampaignTool = createTool({
-  id: create_app_install_campaign.name,
-  description: create_app_install_campaign.description,
-  inputSchema: create_app_install_campaign.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_app_install_campaign.name, inputData),
-});
-
-const appInstallMetricsTool = createTool({
-  id: get_app_install_metrics.name,
-  description: get_app_install_metrics.description,
-  inputSchema: get_app_install_metrics.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(get_app_install_metrics.name, inputData),
-});
-
-const leadGenCampaignTool = createTool({
-  id: create_lead_gen_campaign.name,
-  description: create_lead_gen_campaign.description,
-  inputSchema: create_lead_gen_campaign.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_lead_gen_campaign.name, inputData),
-});
-
-const leadGenMetricsTool = createTool({
-  id: get_lead_gen_metrics.name,
-  description: get_lead_gen_metrics.description,
-  inputSchema: get_lead_gen_metrics.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(get_lead_gen_metrics.name, inputData),
-});
-
-const retargetingAudienceTool = createTool({
-  id: create_retargeting_audience.name,
-  description: create_retargeting_audience.description,
-  inputSchema: create_retargeting_audience.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_retargeting_audience.name, inputData),
-});
-
-const retargetingCampaignTool = createTool({
-  id: create_retargeting_campaign.name,
-  description: create_retargeting_campaign.description,
-  inputSchema: create_retargeting_campaign.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_retargeting_campaign.name, inputData),
-});
-
-const retargetingPerformanceTool = createTool({
-  id: get_retargeting_performance.name,
-  description: get_retargeting_performance.description,
-  inputSchema: get_retargeting_performance.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(get_retargeting_performance.name, inputData),
-});
-
-const remarketingAudienceTool = createTool({
-  id: create_remarketing_audience.name,
-  description: create_remarketing_audience.description,
-  inputSchema: create_remarketing_audience.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_remarketing_audience.name, inputData),
-});
-
-const dripCampaignTool = createTool({
-  id: create_drip_campaign.name,
-  description: create_drip_campaign.description,
-  inputSchema: create_drip_campaign.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(create_drip_campaign.name, inputData),
-});
-
-const multiTouchAttributionTool = createTool({
-  id: multi_touch_attribution.name,
-  description: multi_touch_attribution.description,
-  inputSchema: multi_touch_attribution.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(multi_touch_attribution.name, inputData),
-});
-
-const customerLtvTool = createTool({
-  id: calculate_customer_ltv.name,
-  description: calculate_customer_ltv.description,
-  inputSchema: calculate_customer_ltv.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(calculate_customer_ltv.name, inputData),
-});
-
-const biddingOptimizationTool = createTool({
-  id: optimize_bidding.name,
-  description: optimize_bidding.description,
-  inputSchema: optimize_bidding.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) => mockExecute(optimize_bidding.name, inputData),
-});
-
-const forecastPerformanceTool = createTool({
-  id: forecast_campaign_performance.name,
-  description: forecast_campaign_performance.description,
-  inputSchema: forecast_campaign_performance.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(forecast_campaign_performance.name, inputData),
-});
-
-const competitorAnalysisTool = createTool({
-  id: analyze_competitor_ads.name,
-  description: analyze_competitor_ads.description,
-  inputSchema: analyze_competitor_ads.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(analyze_competitor_ads.name, inputData),
-});
-
-const adVariantsTool = createTool({
-  id: generate_ad_variants.name,
-  description: generate_ad_variants.description,
-  inputSchema: generate_ad_variants.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(generate_ad_variants.name, inputData),
-});
-
-const blendedCpaTool = createTool({
-  id: calculate_blended_cpa.name,
-  description: calculate_blended_cpa.description,
-  inputSchema: calculate_blended_cpa.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(calculate_blended_cpa.name, inputData),
-});
-
-const budgetAllocationTool = createTool({
-  id: optimize_budget_allocation.name,
-  description: optimize_budget_allocation.description,
-  inputSchema: optimize_budget_allocation.inputSchema as any,
-  outputSchema: create_tool_output_schema(),
-  execute: async (inputData) =>
-    mockExecute(optimize_budget_allocation.name, inputData),
-});
-
-function create_tool_output_schema() {
-  return z.object({
-    success: z.boolean(),
-    data: z.any().optional(),
-    error: z.string().optional(),
-    mockMode: z.boolean().optional(),
-  });
-}
-
-function mockExecute(toolName: string, inputData: any) {
-  const mockId = `${toolName.split("-").slice(-1)[0]}_${Date.now()}`;
-  return {
-    success: true,
-    mockMode: true,
-    data: {
-      id: mockId,
-      tool: toolName,
-      input: inputData,
-      message: `MOCK: ${toolName} executed successfully`,
-      createdAt: new Date().toISOString(),
-    },
-  };
-}
 
 export const campaignOptimizerAgent = new Agent({
   id: "campaign-optimizer",
@@ -353,27 +156,27 @@ Agent Services (x402 Payments):
     analytics: analyticsTool,
     crossPlatform: crossPlatformTool,
     // Campaign Types
-    videoCampaign: videoCampaignTool,
-    videoPerformance: videoPerformanceTool,
-    appInstallCampaign: appInstallCampaignTool,
-    appInstallMetrics: appInstallMetricsTool,
-    leadGenCampaign: leadGenCampaignTool,
-    leadGenMetrics: leadGenMetricsTool,
+    createVideoCampaign: create_video_campaign,
+    getVideoPerformance: get_video_performance,
+    createAppInstallCampaign: create_app_install_campaign,
+    getAppInstallMetrics: get_app_install_metrics,
+    createLeadGenCampaign: create_lead_gen_campaign,
+    getLeadGenMetrics: get_lead_gen_metrics,
     // Retargeting & Remarketing
-    retargetingAudience: retargetingAudienceTool,
-    retargetingCampaign: retargetingCampaignTool,
-    retargetingPerformance: retargetingPerformanceTool,
-    remarketingAudience: remarketingAudienceTool,
-    dripCampaign: dripCampaignTool,
+    createRetargetingAudience: create_retargeting_audience,
+    createRetargetingCampaign: create_retargeting_campaign,
+    getRetargetingPerformance: get_retargeting_performance,
+    createRemarketingAudience: create_remarketing_audience,
+    createDripCampaign: create_drip_campaign,
     // Performance Marketing
-    multiTouchAttribution: multiTouchAttributionTool,
-    customerLtv: customerLtvTool,
-    biddingOptimization: biddingOptimizationTool,
-    forecastPerformance: forecastPerformanceTool,
-    competitorAnalysis: competitorAnalysisTool,
-    adVariants: adVariantsTool,
-    blendedCpa: blendedCpaTool,
-    budgetAllocation: budgetAllocationTool,
+    multiTouchAttribution: multi_touch_attribution,
+    customerLtv: calculate_customer_ltv,
+    biddingOptimization: optimize_bidding,
+    forecastPerformance: forecast_campaign_performance,
+    competitorAnalysis: analyze_competitor_ads,
+    adVariants: generate_ad_variants,
+    blendedCpa: calculate_blended_cpa,
+    budgetAllocation: optimize_budget_allocation,
   },
   memory,
 });
