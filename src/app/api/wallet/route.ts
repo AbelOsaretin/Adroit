@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-const isMockMode = !process.env.CIRCLE_API_KEY;
+const isMockMode = !process.env.CIRCLE_API_KEY || !process.env.CIRCLE_APP_ID;
 
 // POST /api/wallet - Create wallet or handle auth
 export async function POST(request: NextRequest) {
@@ -11,8 +11,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, userId, walletId, toAddress, amount, tokenAddress, transactionId } = body;
 
-    // For now, use mock mode for all operations
-    // Real SDK integration requires proper type handling
+    // Use mock mode for now - real SDK integration requires careful type handling
     return handleMockAction(action, userId, walletId, toAddress, amount, transactionId);
   } catch (error) {
     console.error('Wallet API error:', error);
