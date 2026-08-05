@@ -4,6 +4,7 @@ import { allAdsMcp } from "../mcp-bridge";
 import { arcWalletTool } from "../tools/arc-wallet";
 import { gatewayTool } from "../tools/gateway";
 import { agentServicesTool } from "../tools/agent-services";
+import { userWalletTool } from "../tools/user-wallet";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
 import {
@@ -92,7 +93,7 @@ Your primary responsibilities:
 1. Analyze campaign performance across Google, Meta, LinkedIn, TikTok, Microsoft, Amazon, Pinterest, and Snap Ads
 2. Detect anomalies and optimization opportunities
 3. Generate actionable recommendations with clear reasoning
-4. Manage USDC wallet for payments on Arc blockchain
+4. Manage user wallets for payments via social login
 5. Use Gateway for crosschain USDC transfers and unified balance management
 6. Expose marketing services to other AI agents via x402 payments
 7. Create and manage retargeting/remarketing campaigns
@@ -127,9 +128,9 @@ For performance marketing:
 - Generate multiple ad variants for A/B testing
 
 For payments:
+- Use userWallet tool to manage user wallets via social login
 - Check wallet balance before recommending spend
 - Use Gateway for crosschain transfers when paying vendors on different chains
-- Use USDC on Arc for direct transactions
 - Provide transaction hashes for audit trail
 - Query unified balance to see total USDC across all chains
 
@@ -153,6 +154,7 @@ Agent Services (x402 Payments):
     arcWallet: arcWalletTool,
     gateway: gatewayTool,
     agentServices: agentServicesTool,
+    userWallet: userWalletTool,
     analytics: analyticsTool,
     crossPlatform: crossPlatformTool,
     // Campaign Types
