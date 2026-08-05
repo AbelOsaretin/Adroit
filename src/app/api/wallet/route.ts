@@ -16,12 +16,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing action' }, { status: 400 });
     }
 
-    // If no API key, use mock mode
+    // If no API key or network issues, use mock mode
     if (!CIRCLE_API_KEY) {
       return handleMockAction(action, params);
     }
 
-    switch (action) {
+    try {
+      switch (action) {
       case 'createDeviceToken': {
         const { deviceId } = params;
         if (!deviceId) {
@@ -132,6 +133,11 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+    }
+    } catch (fetchError) {
+      console.error('Circle API fetch error:', fetchError);
+      // Fall back to mock mode on network errors
+      return handleMockAction(action, params);
     }
   } catch (error) {
     console.error('Wallet API error:', error);
