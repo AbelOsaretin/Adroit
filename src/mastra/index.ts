@@ -8,11 +8,12 @@ import { campaignExecutorWorkflow } from "./workflows/campaign-executor";
 import { arcWalletTool } from "./tools/arc-wallet";
 import { gatewayTool } from "./tools/gateway";
 import { agentServicesTool } from "./tools/agent-services";
+import { userWalletTool } from "./tools/user-wallet";
 
 export const mastra = new Mastra({
   agents: { campaignOptimizerAgent },
   workflows: { approvalQueueWorkflow, campaignExecutorWorkflow },
-  tools: { arcWalletTool, gatewayTool, agentServicesTool },
+  tools: { arcWalletTool, gatewayTool, agentServicesTool, userWalletTool },
   storage: new LibSQLStore({
     id: "mastra-storage",
     url: "file:./mastra.db",
