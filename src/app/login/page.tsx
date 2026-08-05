@@ -164,7 +164,7 @@ export default function LoginPage() {
     })
 
     setStatus("Redirecting to Google...")
-    sdk.performLogin("GOOGLE")
+    sdk.performLogin("Google")
   }
 
   const handleInitializeUser = async () => {
