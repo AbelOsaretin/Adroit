@@ -146,13 +146,17 @@ export default function LoginPage() {
     const sdk = sdkRef.current
     if (!sdk || !deviceToken || !deviceEncryptionKey) return
 
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+    console.log("Google Client ID:", googleClientId ? "SET" : "MISSING")
+    console.log("App ID:", appId ? "SET" : "MISSING")
+
     sdk.updateConfigs({
       appSettings: { appId },
       loginConfigs: {
         deviceToken,
         deviceEncryptionKey,
         google: {
-          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+          clientId: googleClientId,
           redirectUri: window.location.origin,
           selectAccountPrompt: true,
         },
