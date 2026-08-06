@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Mail, Globe, Apple, Share2, Loader2 } from "lucide-react"
+import { Globe, Loader2 } from "lucide-react"
 
 const appId = process.env.NEXT_PUBLIC_CIRCLE_APP_ID || ""
 
@@ -38,7 +36,7 @@ export default function LoginPage() {
   const [challengeId, setChallengeId] = useState<string | null>(null)
   const [wallets, setWallets] = useState<Wallet[]>([])
 
-  // Initialize SDK on mount
+  // Initialize SDK on mount - restore state from cookies after redirect
   useEffect(() => {
     let cancelled = false
 
@@ -56,25 +54,61 @@ export default function LoginPage() {
             return
           }
 
+          console.log("Login success:", result)
           setLoginResult({
             userToken: result.userToken,
             encryptionKey: result.encryptionKey,
           })
+
+          // Save to localStorage for persistence
+          localStorage.setItem("circle-userToken", result.userToken)
+          localStorage.setItem("circle-encryptionKey", result.encryptionKey)
+
           setStatus("Login successful! Click 'Initialize User' to continue.")
         }
 
-        const sdk = new W3SSdk(
-          {
-            appSettings: { appId },
-          },
-          onLoginComplete
-        )
+        // Restore state from localStorage after redirect
+        const restoredDeviceToken = localStorage.getItem("circle-deviceToken") || ""
+        const restoredDeviceEncryptionKey = localStorage.getItem("circle-deviceEncryptionKey") || ""
+        const restoredUserToken = localStorage.getItem("circle-userToken") || ""
+        const restoredEncryptionKey = localStorage.getItem("circle-encryptionKey") || ""
 
+        const initialConfig: any = {
+          appSettings: { appId },
+          loginConfigs: {},
+        }
+
+        // If we have restored tokens, configure the SDK
+        if (restoredDeviceToken && restoredDeviceEncryptionKey) {
+          initialConfig.loginConfigs = {
+            deviceToken: restoredDeviceToken,
+            deviceEncryptionKey: restoredDeviceEncryptionKey,
+            google: {
+              clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+              redirectUri: window.location.origin + "/login",
+              selectAccountPrompt: true,
+            },
+          }
+        }
+
+        const sdk = new W3SSdk(initialConfig, onLoginComplete)
         sdkRef.current = sdk
 
         if (!cancelled) {
           setSdkReady(true)
-          setStatus("Ready. Click 'Create Device Token' to start.")
+
+          // Restore state
+          if (restoredDeviceToken) setDeviceToken(restoredDeviceToken)
+          if (restoredDeviceEncryptionKey) setDeviceEncryptionKey(restoredDeviceEncryptionKey)
+          if (restoredUserToken && restoredEncryptionKey) {
+            setLoginResult({
+              userToken: restoredUserToken,
+              encryptionKey: restoredEncryptionKey,
+            })
+            setStatus("Session restored. Click 'Initialize User' to continue.")
+          } else {
+            setStatus("Ready. Click 'Create Device Token' to start.")
+          }
         }
       } catch (err) {
         console.error("Failed to initialize SDK:", err)
@@ -131,6 +165,7 @@ export default function LoginPage() {
       setDeviceToken(data.deviceToken)
       setDeviceEncryptionKey(data.deviceEncryptionKey)
 
+      // Save to localStorage
       localStorage.setItem("circle-deviceToken", data.deviceToken)
       localStorage.setItem("circle-deviceEncryptionKey", data.deviceEncryptionKey)
 
@@ -147,8 +182,10 @@ export default function LoginPage() {
     if (!sdk || !deviceToken || !deviceEncryptionKey) return
 
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
-    console.log("Google Client ID:", googleClientId ? "SET" : "MISSING")
-    console.log("App ID:", appId ? "SET" : "MISSING")
+
+    // Persist config for after redirect
+    localStorage.setItem("circle-appId", appId)
+    localStorage.setItem("circle-googleClientId", googleClientId)
 
     sdk.updateConfigs({
       appSettings: { appId },
@@ -157,7 +194,7 @@ export default function LoginPage() {
         deviceEncryptionKey,
         google: {
           clientId: googleClientId,
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin + "/login",
           selectAccountPrompt: true,
         },
       },
@@ -233,8 +270,7 @@ export default function LoginPage() {
       setWallets(walletList)
 
       if (walletList.length > 0) {
-        // Store wallet info and redirect to dashboard
-        localStorage.setItem("circle-userToken", userToken)
+        // Store wallet info
         localStorage.setItem("circle-wallet-id", walletList[0].id)
         localStorage.setItem("circle-wallet-address", walletList[0].address)
         localStorage.setItem("adroit-user-id", userToken)
