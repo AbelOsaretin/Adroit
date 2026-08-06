@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             idempotencyKey: crypto.randomUUID(),
             accountType: 'SCA',
-            blockchains: ['ETH-SEPOLIA'],
+            blockchains: ['ARC-TESTNET'],
           }),
         });
 
@@ -171,7 +171,7 @@ function handleMockAction(action: string, params: any) {
           {
             id: 'mock-wallet-1',
             address: '0x1234567890abcdef1234567890abcdef12345678',
-            blockchain: 'ETH-SEPOLIA',
+            blockchain: 'ARC-TESTNET',
             accountType: 'SCA',
           },
         ],
