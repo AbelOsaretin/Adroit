@@ -22,7 +22,7 @@ export default function Home() {
           <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto">
             Let AI handle your marketing while you focus on what you do best.
           </p>
-          <a href="/onboard">
+          <a href="/login">
             <button className="px-10 py-5 bg-white text-black rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]">
               Get Started
             </button>

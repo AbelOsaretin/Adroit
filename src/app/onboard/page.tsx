@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -126,6 +126,14 @@ export default function OnboardPage() {
     brandSecondaryColor: '#ffffff',
     brandVoice: '',
   })
+
+  // Check if user is logged in
+  useEffect(() => {
+    const userId = localStorage.getItem('adroit-user-id')
+    if (!userId) {
+      router.push('/login')
+    }
+  }, [router])
 
   const updateFormData = (field: keyof OnboardingData, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

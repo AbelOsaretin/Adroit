@@ -275,8 +275,8 @@ export default function LoginPage() {
         localStorage.setItem("circle-wallet-address", walletList[0].address)
         localStorage.setItem("adroit-user-id", userToken)
 
-        setStatus("Wallet ready! Redirecting to dashboard...")
-        setTimeout(() => router.push("/dashboard"), 1500)
+        setStatus("Wallet ready! Redirecting to onboarding...")
+        setTimeout(() => router.push("/onboard"), 1500)
       }
     } catch (error) {
       setStatus("Failed to load wallets")
