@@ -1,25 +1,149 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Loader2, Check, Link as LinkIcon, Unlink } from "lucide-react"
+
+interface Settings {
+  account: {
+    fullName: string
+    email: string
+    phone: string
+    timezone: string
+  }
+  preferences: {
+    language: string
+    currency: string
+    theme: string
+  }
+  notifications: {
+    emailNotifications: boolean
+    pushNotifications: boolean
+    campaignAlerts: boolean
+    performanceReports: boolean
+    frequency: string
+  }
+  integrations: {
+    metaConnected: boolean
+    googleConnected: boolean
+    tiktokConnected: boolean
+  }
+}
 
 export default function SettingsPage() {
-  const [fullName, setFullName] = useState("Admin User")
-  const [email, setEmail] = useState("admin@adroit.ai")
-  const [phone, setPhone] = useState("+1 (555) 123-4567")
-  const [timezone, setTimezone] = useState("utc-5")
-  const [language, setLanguage] = useState("en")
-  const [currency, setCurrency] = useState("usd")
+  const [settings, setSettings] = useState<Settings>({
+    account: {
+      fullName: "Admin User",
+      email: "admin@adroit.ai",
+      phone: "+1 (555) 123-4567",
+      timezone: "utc-5",
+    },
+    preferences: {
+      language: "en",
+      currency: "usd",
+      theme: "dark",
+    },
+    notifications: {
+      emailNotifications: true,
+      pushNotifications: true,
+      campaignAlerts: true,
+      performanceReports: true,
+      frequency: "real-time",
+    },
+    integrations: {
+      metaConnected: false,
+      googleConnected: false,
+      tiktokConnected: false,
+    },
+  })
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  const handleSaveAccount = () => {
-    alert("Account settings saved!")
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/settings")
+      const data = await res.json()
+      if (data.success) {
+        setSettings(data.data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch settings:", error)
+    }
+  }
+
+  const saveSettings = async (section: string) => {
+    setLoading(true)
+    try {
+      await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          section,
+          data: settings[section as keyof Settings],
+        }),
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (error) {
+      console.error("Failed to save settings:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateAccount = (field: string, value: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      account: { ...prev.account, [field]: value },
+    }))
+  }
+
+  const updatePreferences = (field: string, value: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      preferences: { ...prev.preferences, [field]: value },
+    }))
+  }
+
+  const updateNotifications = (field: string, value: boolean | string) => {
+    setSettings((prev) => ({
+      ...prev,
+      notifications: { ...prev.notifications, [field]: value },
+    }))
+  }
+
+  const toggleIntegration = (platform: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      integrations: {
+        ...prev.integrations,
+        [`${platform}Connected`]: !prev.integrations[`${platform}Connected` as keyof typeof prev.integrations],
+      },
+    }))
   }
 
   return (
@@ -32,13 +156,15 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="account" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
+        {/* Account Tab */}
         <TabsContent value="account">
           <Card>
             <CardHeader>
@@ -51,7 +177,10 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-20 w-20">
                     <AvatarFallback>
-                      {fullName.split(" ").map((n) => n[0]).join("")}
+                      {settings.account.fullName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -60,8 +189,8 @@ export default function SettingsPage() {
                 <Label htmlFor="full-name">Full Name</Label>
                 <Input
                   id="full-name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  value={settings.account.fullName}
+                  onChange={(e) => updateAccount("fullName", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -69,8 +198,8 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={settings.account.email}
+                  onChange={(e) => updateAccount("email", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -78,13 +207,16 @@ export default function SettingsPage() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  value={settings.account.phone}
+                  onChange={(e) => updateAccount("phone", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
-                <Select value={timezone} onValueChange={setTimezone}>
+                <Select
+                  value={settings.account.timezone}
+                  onValueChange={(v) => updateAccount("timezone", v || "utc-5")}
+                >
                   <SelectTrigger id="timezone">
                     <SelectValue placeholder="Select Timezone" />
                   </SelectTrigger>
@@ -102,43 +234,19 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveAccount}>Save Account Settings</Button>
+              <Button onClick={() => saveSettings("account")} disabled={loading}>
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : saved ? (
+                  <Check className="mr-2 h-4 w-4" />
+                ) : null}
+                {saved ? "Saved!" : "Save Account Settings"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
 
-        <TabsContent value="security">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
-                <CardDescription>Manage your account's security settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input id="new-password" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input id="confirm-password" type="password" />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch id="two-factor" />
-                  <Label htmlFor="two-factor">Enable Two-Factor Authentication</Label>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button>Save Security Settings</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </TabsContent>
-
+        {/* Preferences Tab */}
         <TabsContent value="preferences">
           <Card>
             <CardHeader>
@@ -149,7 +257,10 @@ export default function SettingsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="language">Language</Label>
-                  <Select value={language} onValueChange={setLanguage}>
+                  <Select
+                    value={settings.preferences.language}
+                    onValueChange={(v) => updatePreferences("language", v || "en")}
+                  >
                     <SelectTrigger id="language">
                       <SelectValue placeholder="Select Language" />
                     </SelectTrigger>
@@ -164,7 +275,10 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="currency">Currency</Label>
-                  <Select value={currency} onValueChange={setCurrency}>
+                  <Select
+                    value={settings.preferences.currency}
+                    onValueChange={(v) => updatePreferences("currency", v || "usd")}
+                  >
                     <SelectTrigger id="currency">
                       <SelectValue placeholder="Select Currency" />
                     </SelectTrigger>
@@ -179,11 +293,19 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Preferences</Button>
+              <Button onClick={() => saveSettings("preferences")} disabled={loading}>
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : saved ? (
+                  <Check className="mr-2 h-4 w-4" />
+                ) : null}
+                {saved ? "Saved!" : "Save Preferences"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
 
+        {/* Notifications Tab */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
@@ -195,29 +317,56 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label>Notification Channels</Label>
                   <div className="flex items-center space-x-2">
-                    <Switch id="email-notifications" defaultChecked />
+                    <Switch
+                      id="email-notifications"
+                      checked={settings.notifications.emailNotifications}
+                      onCheckedChange={(v) =>
+                        updateNotifications("emailNotifications", v)
+                      }
+                    />
                     <Label htmlFor="email-notifications">Email Notifications</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="push-notifications" defaultChecked />
+                    <Switch
+                      id="push-notifications"
+                      checked={settings.notifications.pushNotifications}
+                      onCheckedChange={(v) =>
+                        updateNotifications("pushNotifications", v)
+                      }
+                    />
                     <Label htmlFor="push-notifications">Push Notifications</Label>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Notification Types</Label>
                   <div className="flex items-center space-x-2">
-                    <Switch id="campaign-alerts" defaultChecked />
+                    <Switch
+                      id="campaign-alerts"
+                      checked={settings.notifications.campaignAlerts}
+                      onCheckedChange={(v) =>
+                        updateNotifications("campaignAlerts", v)
+                      }
+                    />
                     <Label htmlFor="campaign-alerts">Campaign Alerts</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="performance-reports" defaultChecked />
+                    <Switch
+                      id="performance-reports"
+                      checked={settings.notifications.performanceReports}
+                      onCheckedChange={(v) =>
+                        updateNotifications("performanceReports", v)
+                      }
+                    />
                     <Label htmlFor="performance-reports">Performance Reports</Label>
                   </div>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="notification-frequency">Notification Frequency</Label>
-                <Select defaultValue="real-time">
+                <Select
+                  value={settings.notifications.frequency}
+                  onValueChange={(v) => updateNotifications("frequency", v || "real-time")}
+                >
                   <SelectTrigger id="notification-frequency">
                     <SelectValue placeholder="Select Frequency" />
                   </SelectTrigger>
@@ -230,7 +379,161 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Notification Settings</Button>
+              <Button
+                onClick={() => saveSettings("notifications")}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : saved ? (
+                  <Check className="mr-2 h-4 w-4" />
+                ) : null}
+                {saved ? "Saved!" : "Save Notification Settings"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Integrations Tab */}
+        <TabsContent value="integrations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Ad Platform Integrations</CardTitle>
+              <CardDescription>Connect your ad platforms to sync data</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Meta Ads */}
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <span className="text-blue-500 font-bold">M</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Meta Ads</p>
+                    <p className="text-sm text-muted-foreground">
+                      Facebook, Instagram, Messenger
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant={settings.integrations.metaConnected ? "outline" : "default"}
+                  onClick={() => toggleIntegration("meta")}
+                >
+                  {settings.integrations.metaConnected ? (
+                    <>
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Connected
+                    </>
+                  ) : (
+                    "Connect"
+                  )}
+                </Button>
+              </div>
+
+              {/* Google Ads */}
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                    <span className="text-red-500 font-bold">G</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Google Ads</p>
+                    <p className="text-sm text-muted-foreground">
+                      Search, Display, YouTube, Shopping
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant={
+                    settings.integrations.googleConnected ? "outline" : "default"
+                  }
+                  onClick={() => toggleIntegration("google")}
+                >
+                  {settings.integrations.googleConnected ? (
+                    <>
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Connected
+                    </>
+                  ) : (
+                    "Connect"
+                  )}
+                </Button>
+              </div>
+
+              {/* TikTok Ads */}
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                    <span className="text-pink-500 font-bold">T</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">TikTok Ads</p>
+                    <p className="text-sm text-muted-foreground">
+                      In-feed, Spark Ads, branded effects
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant={
+                    settings.integrations.tiktokConnected ? "outline" : "default"
+                  }
+                  onClick={() => toggleIntegration("tiktok")}
+                >
+                  {settings.integrations.tiktokConnected ? (
+                    <>
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Connected
+                    </>
+                  ) : (
+                    "Connect"
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                onClick={() => saveSettings("integrations")}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : saved ? (
+                  <Check className="mr-2 h-4 w-4" />
+                ) : null}
+                {saved ? "Saved!" : "Save Integration Settings"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Security Tab */}
+        <TabsContent value="security">
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Settings</CardTitle>
+              <CardDescription>Manage your account's security</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Wallet Security</Label>
+                <p className="text-sm text-muted-foreground">
+                  Your wallet is secured by Circle's MPC technology. No private keys
+                  are stored on our servers.
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="two-factor" />
+                <Label htmlFor="two-factor">Enable Two-Factor Authentication</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="session-timeout" defaultChecked />
+                <Label htmlFor="session-timeout">
+                  Auto-logout after 30 minutes of inactivity
+                </Label>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button>Save Security Settings</Button>
             </CardFooter>
           </Card>
         </TabsContent>
