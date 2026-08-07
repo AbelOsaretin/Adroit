@@ -18,6 +18,7 @@ import {
   Wallet,
   Globe,
   Store,
+  CreditCard,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
+  { name: "Cards", href: "/dashboard/cards", icon: CreditCard },
   { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
   { name: "Gateway", href: "/dashboard/gateway", icon: Globe },
   { name: "Services", href: "/dashboard/services", icon: Store },
