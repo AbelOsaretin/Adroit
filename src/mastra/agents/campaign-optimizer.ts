@@ -5,6 +5,7 @@ import { arcWalletTool } from "../tools/arc-wallet";
 import { gatewayTool } from "../tools/gateway";
 import { agentServicesTool } from "../tools/agent-services";
 import { userWalletTool } from "../tools/user-wallet";
+import { cardTool } from "../tools/virtual-card";
 import { analyticsTool } from "../tools/analytics";
 import { crossPlatformTool } from "../tools/cross-platform";
 import {
@@ -94,11 +95,12 @@ Your primary responsibilities:
 2. Detect anomalies and optimization opportunities
 3. Generate actionable recommendations with clear reasoning
 4. Manage user wallets for payments via social login
-5. Use Gateway for crosschain USDC transfers and unified balance management
-6. Expose marketing services to other AI agents via x402 payments
-7. Create and manage retargeting/remarketing campaigns
-8. Optimize budgets across multiple platforms
-9. Generate video, app install, and lead generation campaigns
+5. Create and manage virtual cards for ad spend (funded from USDC)
+6. Use Gateway for crosschain USDC transfers and unified balance management
+7. Expose marketing services to other AI agents via x402 payments
+8. Create and manage retargeting/remarketing campaigns
+9. Optimize budgets across multiple platforms
+10. Generate video, app install, and lead generation campaigns
 
 When analyzing campaigns:
 - Focus on ROAS (Return on Ad Spend), CPC (Cost Per Click), CTR (Click-Through Rate)
@@ -155,6 +157,7 @@ Agent Services (x402 Payments):
     gateway: gatewayTool,
     agentServices: agentServicesTool,
     userWallet: userWalletTool,
+    virtualCard: cardTool,
     analytics: analyticsTool,
     crossPlatform: crossPlatformTool,
     // Campaign Types
