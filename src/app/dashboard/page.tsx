@@ -128,10 +128,18 @@ export default function DashboardPage() {
   const fetchAllData = async () => {
     setLoading(true)
     try {
+      // Get Meta access token from localStorage (set during OAuth)
+      const metaToken = localStorage.getItem("meta-access-token")
+      const metaAccountId = localStorage.getItem("meta-account-id")
+      
+      // Build query params with token if available
+      const tokenParam = metaToken ? `&userToken=${metaToken}` : ""
+      const accountParam = metaAccountId ? `&accountId=${metaAccountId}` : ""
+      
       const [insightsRes, campaignsRes, platformRes] = await Promise.all([
-        fetch(`/api/meta?action=insights&days=${days}`),
-        fetch("/api/meta?action=campaigns"),
-        fetch("/api/meta?action=platform-comparison"),
+        fetch(`/api/meta?action=insights&days=${days}${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=campaigns${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=platform-comparison${tokenParam}${accountParam}`),
       ])
 
       const insightsData = await insightsRes.json()

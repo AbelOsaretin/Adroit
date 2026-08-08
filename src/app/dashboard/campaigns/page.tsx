@@ -53,9 +53,16 @@ export default function CampaignsPage() {
   const fetchCampaigns = async () => {
     setLoading(true)
     try {
+      // Get Meta access token from localStorage
+      const metaToken = localStorage.getItem("meta-access-token")
+      const metaAccountId = localStorage.getItem("meta-account-id")
+      
+      const tokenParam = metaToken ? `?userToken=${metaToken}` : ""
+      const accountParam = metaAccountId ? `&accountId=${metaAccountId}` : ""
+      
       const [campaignsRes, insightsRes] = await Promise.all([
-        fetch("/api/meta?action=campaigns"),
-        fetch("/api/meta?action=insights&days=30"),
+        fetch(`/api/meta?action=campaigns${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=insights&days=30${tokenParam}${accountParam}`),
       ])
 
       const campaignsData = await campaignsRes.json()

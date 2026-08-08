@@ -1,18 +1,22 @@
 // Meta Ads API Endpoint
-// Fetches real campaign data from Meta Ads
+// Fetches real campaign data from Meta Ads using user's OAuth token
 
 import { NextRequest, NextResponse } from "next/server"
 
-const isMockMode = !process.env.META_ACCESS_TOKEN
-
-async function getMetaAccount() {
+async function getMetaAccount(userToken?: string, accountId?: string) {
   const { getAdAccount } = await import(
     "@/mastra/mcp/meta-ads/src/sdk"
   )
-  return getAdAccount(
-    process.env.META_AD_ACCOUNT_ID || "1825876572152624",
-    process.env.META_ACCESS_TOKEN!
-  )
+  
+  // Use user's OAuth token if provided, otherwise fall back to platform token
+  const accessToken = userToken || process.env.META_ACCESS_TOKEN
+  const adAccountId = accountId || process.env.META_AD_ACCOUNT_ID || "1825876572152624"
+  
+  if (!accessToken) {
+    throw new Error("No Meta access token available")
+  }
+  
+  return getAdAccount(adAccountId, accessToken)
 }
 
 function serializeSdkObject(obj: any) {
@@ -25,13 +29,16 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url)
   const action = url.searchParams.get("action") || "insights"
   const days = parseInt(url.searchParams.get("days") || "7")
+  const userToken = url.searchParams.get("userToken") || undefined
+  const accountId = url.searchParams.get("accountId") || undefined
 
-  if (isMockMode) {
+  // Check if we have any token available
+  if (!userToken && !process.env.META_ACCESS_TOKEN) {
     return getMockData(action, days)
   }
 
   try {
-    const account = await getMetaAccount()
+    const account = await getMetaAccount(userToken, accountId)
 
     switch (action) {
       case "insights": {
