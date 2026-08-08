@@ -52,9 +52,9 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Link href="/dashboard">
+          <Link href="/login">
             <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-white/90 transition-colors">
-              Dashboard
+              Get Started
             </button>
           </Link>
         </div>
@@ -86,9 +86,9 @@ export function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 <button className="mt-4 bg-white text-black px-8 py-3 rounded-full text-lg font-semibold">
-                  Dashboard
+                  Get Started
                 </button>
               </Link>
             </div>
