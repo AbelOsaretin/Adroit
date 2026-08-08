@@ -76,22 +76,33 @@ export default function WalletPage() {
       })
       const balanceData = await balanceRes.json()
 
+      // Normalize token data - handle both real API and mock formats
+      const balances = (balanceData.tokenBalances || []).map((b: any) => ({
+        symbol: b.token?.symbol || b.symbol || "UNKNOWN",
+        name: b.token?.name || b.name || "Unknown Token",
+        amount: b.amount || "0",
+        tokenAddress: b.token?.tokenAddress || b.tokenAddress || "",
+        decimals: b.token?.decimals || 6,
+      }))
+
       setWallet({
         walletId,
         address: walletAddress,
         blockchain: "ARC-TESTNET",
-        balances: balanceData.tokenBalances || [],
+        balances,
       })
 
+      // Create initial transaction based on actual balance
+      const usdcAmount = balances.find((b: any) => b.symbol === "USDC")?.amount || "0"
       setTransactions([
         {
           id: "tx-1",
           type: "receive",
           to: walletAddress,
           from: "0x0000000000000000000000000000000000000000",
-          amount: "50.00",
+          amount: usdcAmount,
           status: "COMPLETE",
-          date: "Just now (Faucet)",
+          date: "Funded via Faucet",
         },
       ])
     } catch (error) {
@@ -266,18 +277,23 @@ export default function WalletPage() {
                   {wallet.balances.map((balance, index) => (
                     <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs font-bold">{balance.symbol?.slice(0, 2)}</span>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                          balance.symbol === "USDC" ? "bg-blue-600" :
+                          balance.symbol === "ETH" ? "bg-gray-700" :
+                          "bg-primary/20"
+                        }`}>
+                          {balance.symbol === "USDC" ? "$" :
+                           balance.symbol === "ETH" ? "Ξ" :
+                           balance.symbol?.slice(0, 2)}
                         </div>
                         <div>
-                          <p className="text-sm font-medium">{balance.symbol}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">
-                            {balance.tokenAddress}
-                          </p>
+                          <p className="text-sm font-medium">{balance.name || balance.symbol}</p>
+                          <p className="text-xs text-muted-foreground">{balance.symbol}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold">{balance.amount}</p>
+                        <p className="text-xs text-muted-foreground">{balance.symbol}</p>
                       </div>
                     </div>
                   ))}
