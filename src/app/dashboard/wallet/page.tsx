@@ -120,20 +120,48 @@ export default function WalletPage() {
 
   const handleSendPayment = async () => {
     if (!sendAddress || !sendAmount || !wallet) return
-    setTransactions([
-      {
-        id: `tx-${Date.now()}`,
-        type: "send",
-        to: sendAddress,
-        from: wallet.address,
-        amount: sendAmount,
-        status: "INITIATED",
-        date: "Just now",
-      },
-      ...transactions,
-    ])
-    setSendAddress("")
-    setSendAmount("")
+    
+    setLoading(true)
+    try {
+      const userToken = localStorage.getItem("circle-userToken")
+      
+      const res = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "sendPayment",
+          userToken,
+          walletId: wallet.walletId,
+          toAddress: sendAddress,
+          amount: parseFloat(sendAmount),
+        }),
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok) {
+        setTransactions([
+          {
+            id: data.transactionId || `tx-${Date.now()}`,
+            type: "send",
+            to: sendAddress,
+            from: wallet.address,
+            amount: sendAmount,
+            status: data.status || "INITIATED",
+            date: "Just now",
+          },
+          ...transactions,
+        ])
+        setSendAddress("")
+        setSendAmount("")
+      } else {
+        console.error("Send payment failed:", data)
+      }
+    } catch (error) {
+      console.error("Failed to send payment:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const copyAddress = () => {
