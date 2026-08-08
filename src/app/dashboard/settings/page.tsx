@@ -45,6 +45,8 @@ interface Settings {
   }
   integrations: {
     metaConnected: boolean
+    metaAccountId: string | null
+    metaAccountName: string | null
     googleConnected: boolean
     tiktokConnected: boolean
   }
@@ -72,6 +74,8 @@ export default function SettingsPage() {
     },
     integrations: {
       metaConnected: false,
+      metaAccountId: null,
+      metaAccountName: null,
       googleConnected: false,
       tiktokConnected: false,
     },
@@ -144,6 +148,33 @@ export default function SettingsPage() {
         [`${platform}Connected`]: !prev.integrations[`${platform}Connected` as keyof typeof prev.integrations],
       },
     }))
+  }
+
+  const handleMetaConnect = async () => {
+    if (settings.integrations.metaConnected) {
+      // Disconnect
+      setSettings((prev) => ({
+        ...prev,
+        integrations: {
+          ...prev.integrations,
+          metaConnected: false,
+          metaAccountId: null,
+          metaAccountName: null,
+        },
+      }))
+      return
+    }
+
+    // Get OAuth URL
+    try {
+      const res = await fetch("/api/auth/meta?action=auth")
+      const data = await res.json()
+      if (data.authUrl) {
+        window.location.href = data.authUrl
+      }
+    } catch (error) {
+      console.error("Failed to get Meta auth URL:", error)
+    }
   }
 
   return (
@@ -399,7 +430,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Ad Platform Integrations</CardTitle>
-              <CardDescription>Connect your ad platforms to sync data</CardDescription>
+              <CardDescription>Connect your ad platforms to sync data and run campaigns</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Meta Ads */}
@@ -413,11 +444,16 @@ export default function SettingsPage() {
                     <p className="text-sm text-muted-foreground">
                       Facebook, Instagram, Messenger
                     </p>
+                    {settings.integrations.metaConnected && (
+                      <p className="text-xs text-green-500 mt-1">
+                        Connected to account: {settings.integrations.metaAccountId || "Unknown"}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <Button
                   variant={settings.integrations.metaConnected ? "outline" : "default"}
-                  onClick={() => toggleIntegration("meta")}
+                  onClick={() => handleMetaConnect()}
                 >
                   {settings.integrations.metaConnected ? (
                     <>
@@ -425,7 +461,7 @@ export default function SettingsPage() {
                       Connected
                     </>
                   ) : (
-                    "Connect"
+                    "Connect Meta Ads"
                   )}
                 </Button>
               </div>
