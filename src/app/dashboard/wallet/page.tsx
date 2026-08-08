@@ -149,72 +149,66 @@ export default function WalletPage() {
     
     setLoading(true)
     try {
-      // Set authentication on SDK
+      // Step 1: Create transaction challenge via API
+      const res = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "createTransactionChallenge",
+          userToken,
+          walletId: wallet.walletId,
+          toAddress: sendAddress,
+          amount: parseFloat(sendAmount),
+        }),
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok || !data.challengeId) {
+        console.error("Failed to create challenge:", data)
+        setLoading(false)
+        return
+      }
+      
+      // Step 2: Set authentication on SDK
       sdk.setAuthentication({
         userToken,
         encryptionKey,
       })
       
-      // Create transaction challenge via SDK
-      // The SDK will handle the challenge creation and signing
-      sdk.createTransactionChallenge({
-        walletId: wallet.walletId,
-        toAddress: sendAddress,
-        tokenAddress: '0x3600000000000000000000000000000000000000', // USDC on Arc
-        amount: sendAmount,
-        blockchain: 'ARC-TESTNET',
-      }, (error: unknown, result: any) => {
+      // Step 3: Execute the challenge to sign the transaction
+      sdk.execute(data.challengeId, (error: unknown) => {
         if (error) {
-          console.error("Failed to create transaction challenge:", error)
+          console.error("Failed to sign transaction:", error)
           setTransactions([
             {
-              id: `tx-${Date.now()}`,
+              id: data.challengeId,
               type: "send",
               to: sendAddress,
               from: wallet.address,
               amount: sendAmount,
               status: "FAILED",
-              date: "Just now - Transaction failed",
+              date: "Just now - Signing failed",
             },
             ...transactions,
           ])
-          setLoading(false)
-        } else if (result?.challengeId) {
-          // Execute the challenge to complete the transaction
-          sdk.execute(result.challengeId, (execError: unknown) => {
-            if (execError) {
-              console.error("Failed to execute transaction:", execError)
-              setTransactions([
-                {
-                  id: result.challengeId,
-                  type: "send",
-                  to: sendAddress,
-                  from: wallet.address,
-                  amount: sendAmount,
-                  status: "FAILED",
-                  date: "Just now - Signing failed",
-                },
-                ...transactions,
-              ])
-            } else {
-              setTransactions([
-                {
-                  id: result.challengeId,
-                  type: "send",
-                  to: sendAddress,
-                  from: wallet.address,
-                  amount: sendAmount,
-                  status: "COMPLETE",
-                  date: "Just now",
-                },
-                ...transactions,
-              ])
-            }
-            setSendAddress("")
-            setSendAmount("")
-            setLoading(false)
-          })
+        } else {
+          setTransactions([
+            {
+              id: data.challengeId,
+              type: "send",
+              to: sendAddress,
+              from: wallet.address,
+              amount: sendAmount,
+              status: "COMPLETE",
+              date: "Just now",
+            },
+            ...transactions,
+          ])
         }
+        setSendAddress("")
+        setSendAmount("")
+        setLoading(false)
       })
     } catch (error) {
       console.error("Failed to send payment:", error)

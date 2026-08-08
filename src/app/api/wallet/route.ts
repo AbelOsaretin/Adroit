@@ -131,6 +131,44 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(data.data, { status: 200 });
       }
 
+      case 'createTransactionChallenge': {
+        const { userToken, walletId, toAddress, amount, tokenAddress } = params;
+        if (!userToken || !walletId || !toAddress || !amount) {
+          return NextResponse.json(
+            { error: 'Missing required fields' },
+            { status: 400 }
+          );
+        }
+
+        // Create a transaction challenge via Circle API
+        // This creates a challenge that the user must sign via SDK
+        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${CIRCLE_API_KEY}`,
+            'X-User-Token': userToken,
+          },
+          body: JSON.stringify({
+            walletId,
+            toAddress,
+            tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000', // USDC on Arc
+            amount: amount.toString(),
+            blockchain: 'ARC-TESTNET',
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        // Returns: { challengeId }
+        return NextResponse.json({
+          challengeId: data.data?.challengeId,
+        }, { status: 200 });
+      }
+
       case 'sendPayment': {
         const { userToken, walletId, toAddress, amount, tokenAddress } = params;
         if (!userToken || !walletId || !toAddress || !amount) {
