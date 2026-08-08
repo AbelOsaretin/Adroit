@@ -45,7 +45,8 @@ export default function WalletPage() {
   const [sendAddress, setSendAddress] = useState("")
   const [sendAmount, setSendAmount] = useState("")
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [copied, setCopied] = useState(false)
+  const [copiedAddress, setCopiedAddress] = useState(false)
+  const [copiedWalletId, setCopiedWalletId] = useState(false)
 
   useEffect(() => {
     loadWalletData()
@@ -128,17 +129,28 @@ export default function WalletPage() {
     setSendAmount("")
   }
 
-  const copyAddress = () => {
-    if (wallet?.address) {
-      navigator.clipboard.writeText(wallet.address)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
+  const [copiedAddress, setCopiedAddress] = useState(false)
+  const [copiedWalletId, setCopiedWalletId] = useState(false)
 
   const usdcBalance = wallet?.balances?.find(
     (b) => b.symbol === "USDC" || b.symbol?.startsWith("USDC")
   )
+
+  const copyAddress = () => {
+    if (wallet?.address) {
+      navigator.clipboard.writeText(wallet.address)
+      setCopiedAddress(true)
+      setTimeout(() => setCopiedAddress(false), 2000)
+    }
+  }
+
+  const copyWalletId = () => {
+    if (wallet?.walletId) {
+      navigator.clipboard.writeText(wallet.walletId)
+      setCopiedWalletId(true)
+      setTimeout(() => setCopiedWalletId(false), 2000)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -197,18 +209,37 @@ export default function WalletPage() {
                 <CardTitle className="text-sm font-medium">Wallet Address</CardTitle>
                 <ExternalLink className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <div className="text-sm font-mono truncate flex-1">{wallet.address}</div>
-                  <Button variant="ghost" size="sm" onClick={copyAddress}>
-                    {copied ? (
-                      <span className="text-green-500 text-xs">Copied!</span>
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+              <CardContent className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Address</p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-mono flex-1 p-2 rounded bg-muted truncate">
+                      {wallet.address}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyAddress}>
+                      {copiedAddress ? (
+                        <span className="text-green-500 text-xs">Copied!</span>
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Wallet ID: {wallet.walletId.slice(0, 20)}...</p>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Wallet ID</p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-mono flex-1 p-2 rounded bg-muted truncate">
+                      {wallet.walletId}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyWalletId}>
+                      {copiedWalletId ? (
+                        <span className="text-green-500 text-xs">Copied!</span>
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
