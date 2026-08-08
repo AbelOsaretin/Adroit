@@ -140,7 +140,9 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/wallets/${walletId}/transactions`, {
+        // For User-Controlled Wallets, we need to create a transaction challenge
+        // The user will need to sign this challenge via the SDK
+        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -148,12 +150,17 @@ export async function POST(request: NextRequest) {
             'X-User-Token': userToken,
           },
           body: JSON.stringify({
-            idempotencyKey: crypto.randomUUID(),
             walletId,
             toAddress,
             tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000', // USDC on Arc
             amount: amount.toString(),
             blockchain: 'ARC-TESTNET',
+            fee: {
+              type: 'level',
+              config: {
+                feeLevel: 'MEDIUM',
+              },
+            },
           }),
         });
 
@@ -162,9 +169,11 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(data, { status: response.status });
         }
 
+        // Returns: { challengeId }
         return NextResponse.json({
-          transactionId: data.data?.id,
-          status: 'INITIATED',
+          challengeId: data.data?.challengeId,
+          status: 'PENDING_SIGNATURE',
+          message: 'Transaction created. User must sign via SDK.',
         }, { status: 200 });
       }
 

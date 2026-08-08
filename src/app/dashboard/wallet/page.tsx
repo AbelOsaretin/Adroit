@@ -124,7 +124,9 @@ export default function WalletPage() {
     setLoading(true)
     try {
       const userToken = localStorage.getItem("circle-userToken")
+      const encryptionKey = localStorage.getItem("circle-encryptionKey")
       
+      // First, create the transaction challenge via API
       const res = await fetch("/api/wallet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -139,16 +141,18 @@ export default function WalletPage() {
       
       const data = await res.json()
       
-      if (res.ok) {
+      if (res.ok && data.challengeId) {
+        // In production, we would use the SDK to sign the challenge
+        // For now, add it to transactions with pending status
         setTransactions([
           {
-            id: data.transactionId || `tx-${Date.now()}`,
+            id: data.challengeId || `tx-${Date.now()}`,
             type: "send",
             to: sendAddress,
             from: wallet.address,
             amount: sendAmount,
-            status: data.status || "INITIATED",
-            date: "Just now",
+            status: "PENDING_SIGNATURE",
+            date: "Just now - Awaiting signature",
           },
           ...transactions,
         ])
