@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,6 +16,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react"
+
+const appId = process.env.NEXT_PUBLIC_CIRCLE_APP_ID || ""
 
 interface WalletData {
   walletId: string
@@ -47,6 +49,21 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [copiedAddress, setCopiedAddress] = useState(false)
   const [copiedWalletId, setCopiedWalletId] = useState(false)
+  const sdkRef = useRef<any>(null)
+
+  // Initialize SDK
+  useEffect(() => {
+    const initSdk = async () => {
+      try {
+        const { W3SSdk } = await import("@circle-fin/w3s-pw-web-sdk")
+        const sdk = new W3SSdk({ appSettings: { appId } })
+        sdkRef.current = sdk
+      } catch (err) {
+        console.error("Failed to initialize SDK:", err)
+      }
+    }
+    initSdk()
+  }, [])
 
   useEffect(() => {
     loadWalletData()
@@ -121,12 +138,18 @@ export default function WalletPage() {
   const handleSendPayment = async () => {
     if (!sendAddress || !sendAmount || !wallet) return
     
+    const sdk = sdkRef.current
+    const userToken = localStorage.getItem("circle-userToken")
+    const encryptionKey = localStorage.getItem("circle-encryptionKey")
+    
+    if (!sdk || !userToken || !encryptionKey) {
+      console.error("SDK or credentials not available")
+      return
+    }
+    
     setLoading(true)
     try {
-      const userToken = localStorage.getItem("circle-userToken")
-      const encryptionKey = localStorage.getItem("circle-encryptionKey")
-      
-      // First, create the transaction challenge via API
+      // Create the transaction challenge via API
       const res = await fetch("/api/wallet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,28 +165,52 @@ export default function WalletPage() {
       const data = await res.json()
       
       if (res.ok && data.challengeId) {
-        // In production, we would use the SDK to sign the challenge
-        // For now, add it to transactions with pending status
-        setTransactions([
-          {
-            id: data.challengeId || `tx-${Date.now()}`,
-            type: "send",
-            to: sendAddress,
-            from: wallet.address,
-            amount: sendAmount,
-            status: "PENDING_SIGNATURE",
-            date: "Just now - Awaiting signature",
-          },
-          ...transactions,
-        ])
-        setSendAddress("")
-        setSendAmount("")
+        // Set authentication on SDK
+        sdk.setAuthentication({
+          userToken,
+          encryptionKey,
+        })
+        
+        // Execute the challenge (sign the transaction)
+        sdk.execute(data.challengeId, (error: unknown) => {
+          if (error) {
+            console.error("Failed to sign transaction:", error)
+            setTransactions([
+              {
+                id: data.challengeId,
+                type: "send",
+                to: sendAddress,
+                from: wallet.address,
+                amount: sendAmount,
+                status: "FAILED",
+                date: "Just now - Signature failed",
+              },
+              ...transactions,
+            ])
+          } else {
+            setTransactions([
+              {
+                id: data.challengeId,
+                type: "send",
+                to: sendAddress,
+                from: wallet.address,
+                amount: sendAmount,
+                status: "COMPLETE",
+                date: "Just now",
+              },
+              ...transactions,
+            ])
+          }
+          setSendAddress("")
+          setSendAmount("")
+          setLoading(false)
+        })
       } else {
         console.error("Send payment failed:", data)
+        setLoading(false)
       }
     } catch (error) {
       console.error("Failed to send payment:", error)
-    } finally {
       setLoading(false)
     }
   }
