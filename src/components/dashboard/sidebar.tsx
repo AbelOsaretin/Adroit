@@ -29,7 +29,6 @@ const navigation = [
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
   { name: "Cards", href: "/dashboard/cards", icon: CreditCard },
   { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
-  { name: "Gateway", href: "/dashboard/gateway", icon: Globe },
   { name: "Services", href: "/dashboard/services", icon: Store },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2, disabled: true },
   { name: "Content", href: "/dashboard/content", icon: FileText, disabled: true },

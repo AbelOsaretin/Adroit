@@ -131,6 +131,67 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(data.data, { status: 200 });
       }
 
+      case 'createTransactionChallenge': {
+        const { userToken, walletId, toAddress, amount, tokenAddress } = params;
+        if (!userToken || !walletId || !toAddress || !amount) {
+          return NextResponse.json(
+            { error: 'Missing required fields' },
+            { status: 400 }
+          );
+        }
+
+        // Correct endpoint: /v1/w3s/user/transactions/transfer
+        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions/transfer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${CIRCLE_API_KEY}`,
+            'X-User-Token': userToken,
+          },
+          body: JSON.stringify({
+            idempotencyKey: crypto.randomUUID(),
+            walletId,
+            destinationAddress: toAddress,
+            tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000', // USDC on Arc
+            amounts: [amount.toString()],
+            blockchain: 'ARC-TESTNET',
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        // Returns: { challengeId }
+        return NextResponse.json({
+          challengeId: data.data?.challengeId,
+        }, { status: 200 });
+      }
+
+      case 'sendPayment': {
+        const { userToken, walletId, toAddress, amount, tokenAddress } = params;
+        if (!userToken || !walletId || !toAddress || !amount) {
+          return NextResponse.json(
+            { error: 'Missing required fields' },
+            { status: 400 }
+          );
+        }
+
+        // For User-Controlled Wallets, transactions are created via SDK on the frontend
+        // This endpoint just validates the request and returns confirmation
+        // The actual transaction is executed by the SDK in the browser
+        
+        return NextResponse.json({
+          success: true,
+          walletId,
+          toAddress,
+          amount,
+          tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000',
+          message: 'Transaction will be executed via SDK',
+        }, { status: 200 });
+      }
+
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
@@ -184,6 +245,13 @@ function handleMockAction(action: string, params: any) {
           { token: { symbol: 'USDC', name: 'USD Coin' }, amount: '1250.50' },
           { token: { symbol: 'ETH', name: 'Ethereum' }, amount: '0.5' },
         ],
+        mockMode: true,
+      });
+
+    case 'sendPayment':
+      return NextResponse.json({
+        transactionId: `mock-tx-${Date.now()}`,
+        status: 'INITIATED',
         mockMode: true,
       });
 

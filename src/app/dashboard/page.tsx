@@ -79,16 +79,9 @@ const services = [
   },
   {
     title: "Wallet",
-    description: "Manage your USDC wallet and send payments",
+    description: "Manage your funds, send payments, and add funds across chains",
     icon: Wallet,
     href: "/dashboard/wallet",
-    disabled: false,
-  },
-  {
-    title: "Gateway",
-    description: "Unified USDC balance across chains with instant transfers",
-    icon: Globe,
-    href: "/dashboard/gateway",
     disabled: false,
   },
   {
