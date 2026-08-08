@@ -51,13 +51,6 @@ export default function WalletPage() {
   useEffect(() => {
     loadWalletData()
   }, [])
-
-  const loadWalletData = async () => {
-    setLoading(true)
-    try {
-      // Get wallet info from localStorage (set during login)
-      const walletId = localStorage.getItem("circle-wallet-id")
-      const walletAddress = localStorage.getItem("circle-wallet-address")
       const userToken = localStorage.getItem("circle-userToken")
 
       if (!walletId || !walletAddress) {
@@ -128,9 +121,6 @@ export default function WalletPage() {
     setSendAddress("")
     setSendAmount("")
   }
-
-  const [copiedAddress, setCopiedAddress] = useState(false)
-  const [copiedWalletId, setCopiedWalletId] = useState(false)
 
   const usdcBalance = wallet?.balances?.find(
     (b) => b.symbol === "USDC" || b.symbol?.startsWith("USDC")
