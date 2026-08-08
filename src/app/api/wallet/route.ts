@@ -140,40 +140,17 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // For User-Controlled Wallets, we need to create a transaction challenge
-        // The user will need to sign this challenge via the SDK
-        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${CIRCLE_API_KEY}`,
-            'X-User-Token': userToken,
-          },
-          body: JSON.stringify({
-            walletId,
-            toAddress,
-            tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000', // USDC on Arc
-            amount: amount.toString(),
-            blockchain: 'ARC-TESTNET',
-            fee: {
-              type: 'level',
-              config: {
-                feeLevel: 'MEDIUM',
-              },
-            },
-          }),
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          return NextResponse.json(data, { status: response.status });
-        }
-
-        // Returns: { challengeId }
+        // For User-Controlled Wallets, transactions are created via SDK on the frontend
+        // This endpoint just validates the request and returns confirmation
+        // The actual transaction is executed by the SDK in the browser
+        
         return NextResponse.json({
-          challengeId: data.data?.challengeId,
-          status: 'PENDING_SIGNATURE',
-          message: 'Transaction created. User must sign via SDK.',
+          success: true,
+          walletId,
+          toAddress,
+          amount,
+          tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000',
+          message: 'Transaction will be executed via SDK',
         }, { status: 200 });
       }
 

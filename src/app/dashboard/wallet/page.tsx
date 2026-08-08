@@ -149,66 +149,56 @@ export default function WalletPage() {
     
     setLoading(true)
     try {
-      // Create the transaction challenge via API
-      const res = await fetch("/api/wallet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "sendPayment",
-          userToken,
-          walletId: wallet.walletId,
-          toAddress: sendAddress,
-          amount: parseFloat(sendAmount),
-        }),
+      // Set authentication on SDK
+      sdk.setAuthentication({
+        userToken,
+        encryptionKey,
       })
       
-      const data = await res.json()
-      
-      if (res.ok && data.challengeId) {
-        // Set authentication on SDK
-        sdk.setAuthentication({
-          userToken,
-          encryptionKey,
-        })
-        
-        // Execute the challenge (sign the transaction)
-        sdk.execute(data.challengeId, (error: unknown) => {
-          if (error) {
-            console.error("Failed to sign transaction:", error)
-            setTransactions([
-              {
-                id: data.challengeId,
-                type: "send",
-                to: sendAddress,
-                from: wallet.address,
-                amount: sendAmount,
-                status: "FAILED",
-                date: "Just now - Signature failed",
-              },
-              ...transactions,
-            ])
-          } else {
-            setTransactions([
-              {
-                id: data.challengeId,
-                type: "send",
-                to: sendAddress,
-                from: wallet.address,
-                amount: sendAmount,
-                status: "COMPLETE",
-                date: "Just now",
-              },
-              ...transactions,
-            ])
-          }
-          setSendAddress("")
-          setSendAmount("")
-          setLoading(false)
-        })
-      } else {
-        console.error("Send payment failed:", data)
-        setLoading(false)
+      // Use SDK to create and sign transaction directly
+      // The SDK handles the challenge creation and signing internally
+      const transactionParams = {
+        walletId: wallet.walletId,
+        toAddress: sendAddress,
+        tokenAddress: '0x3600000000000000000000000000000000000000', // USDC on Arc
+        amount: sendAmount,
+        blockchain: 'ARC-TESTNET',
       }
+      
+      // Execute the transaction via SDK
+      sdk.createTransaction(transactionParams, (error: unknown, result: any) => {
+        if (error) {
+          console.error("Failed to create transaction:", error)
+          setTransactions([
+            {
+              id: `tx-${Date.now()}`,
+              type: "send",
+              to: sendAddress,
+              from: wallet.address,
+              amount: sendAmount,
+              status: "FAILED",
+              date: "Just now - Transaction failed",
+            },
+            ...transactions,
+          ])
+        } else {
+          setTransactions([
+            {
+              id: result?.id || `tx-${Date.now()}`,
+              type: "send",
+              to: sendAddress,
+              from: wallet.address,
+              amount: sendAmount,
+              status: "INITIATED",
+              date: "Just now",
+            },
+            ...transactions,
+          ])
+        }
+        setSendAddress("")
+        setSendAmount("")
+        setLoading(false)
+      })
     } catch (error) {
       console.error("Failed to send payment:", error)
       setLoading(false)
