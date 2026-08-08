@@ -5,18 +5,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Wallet, Send, History, Plus, RefreshCw, ExternalLink } from "lucide-react"
+import {
+  Wallet,
+  Send,
+  History,
+  RefreshCw,
+  ExternalLink,
+  Copy,
+  Loader2,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react"
 
 interface WalletData {
   walletId: string
   address: string
-  balance: string
   blockchain: string
+  balances: Array<{
+    symbol: string
+    amount: string
+    tokenAddress?: string
+  }>
 }
 
 interface Transaction {
   id: string
+  type: "send" | "receive"
   to: string
+  from: string
   amount: string
   status: string
   date: string
@@ -24,176 +40,386 @@ interface Transaction {
 
 export default function WalletPage() {
   const [wallet, setWallet] = useState<WalletData | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [sendAddress, setSendAddress] = useState("")
   const [sendAmount, setSendAmount] = useState("")
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [copiedAddress, setCopiedAddress] = useState(false)
+  const [copiedWalletId, setCopiedWalletId] = useState(false)
 
-  // Mock wallet data
   useEffect(() => {
-    setWallet({
-      walletId: "wallet-123",
-      address: "0x1234567890abcdef1234567890abcdef12345678",
-      balance: "1,250.50",
-      blockchain: "ARC-TESTNET",
-    })
-    setTransactions([
-      { id: "tx-1", to: "0xabcd...ef01", amount: "100", status: "COMPLETE", date: "2 hours ago" },
-      { id: "tx-2", to: "0x9876...5432", amount: "50", status: "COMPLETE", date: "1 day ago" },
-      { id: "tx-3", to: "0xdead...beef", amount: "200", status: "PENDING", date: "2 days ago" },
-    ])
+    loadWalletData()
   }, [])
 
-  const handleCreateWallet = async () => {
+  const loadWalletData = async () => {
     setLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setWallet({
-      walletId: `wallet-${Date.now()}`,
-      address: `0x${Date.now().toString(16).padStart(40, "0")}`,
-      balance: "0",
-      blockchain: "ARC-TESTNET",
-    })
-    setLoading(false)
+    try {
+      const walletId = localStorage.getItem("circle-wallet-id")
+      const walletAddress = localStorage.getItem("circle-wallet-address")
+      const userToken = localStorage.getItem("circle-userToken")
+
+      if (!walletId || !walletAddress) {
+        setWallet(null)
+        setLoading(false)
+        return
+      }
+
+      const balanceRes = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getTokenBalance",
+          userToken,
+          walletId,
+        }),
+      })
+      const balanceData = await balanceRes.json()
+
+      // Normalize token data - handle both real API and mock formats
+      const balances = (balanceData.tokenBalances || []).map((b: any) => ({
+        symbol: b.token?.symbol || b.symbol || "UNKNOWN",
+        name: b.token?.name || b.name || "Unknown Token",
+        amount: b.amount || "0",
+        tokenAddress: b.token?.tokenAddress || b.tokenAddress || "",
+        decimals: b.token?.decimals || 6,
+      }))
+
+      setWallet({
+        walletId,
+        address: walletAddress,
+        blockchain: "ARC-TESTNET",
+        balances,
+      })
+
+      // Create initial transaction based on actual balance
+      const usdcAmount = balances.find((b: any) => b.symbol === "USDC")?.amount || "0"
+      setTransactions([
+        {
+          id: "tx-1",
+          type: "receive",
+          to: walletAddress,
+          from: "0x0000000000000000000000000000000000000000",
+          amount: usdcAmount,
+          status: "COMPLETE",
+          date: "Funded via Faucet",
+        },
+      ])
+    } catch (error) {
+      console.error("Failed to load wallet:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await loadWalletData()
+    setRefreshing(false)
   }
 
   const handleSendPayment = async () => {
-    if (!sendAddress || !sendAmount) return
+    if (!sendAddress || !sendAmount || !wallet) return
+    
     setLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setTransactions([
-      { id: `tx-${Date.now()}`, to: sendAddress, amount: sendAmount, status: "INITIATED", date: "Just now" },
-      ...transactions,
-    ])
-    setSendAddress("")
-    setSendAmount("")
-    setLoading(false)
+    try {
+      const userToken = localStorage.getItem("circle-userToken")
+      const encryptionKey = localStorage.getItem("circle-encryptionKey")
+      
+      // First, create the transaction challenge via API
+      const res = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "sendPayment",
+          userToken,
+          walletId: wallet.walletId,
+          toAddress: sendAddress,
+          amount: parseFloat(sendAmount),
+        }),
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok && data.challengeId) {
+        // In production, we would use the SDK to sign the challenge
+        // For now, add it to transactions with pending status
+        setTransactions([
+          {
+            id: data.challengeId || `tx-${Date.now()}`,
+            type: "send",
+            to: sendAddress,
+            from: wallet.address,
+            amount: sendAmount,
+            status: "PENDING_SIGNATURE",
+            date: "Just now - Awaiting signature",
+          },
+          ...transactions,
+        ])
+        setSendAddress("")
+        setSendAmount("")
+      } else {
+        console.error("Send payment failed:", data)
+      }
+    } catch (error) {
+      console.error("Failed to send payment:", error)
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const copyAddress = () => {
+    if (wallet?.address) {
+      navigator.clipboard.writeText(wallet.address)
+      setCopiedAddress(true)
+      setTimeout(() => setCopiedAddress(false), 2000)
+    }
+  }
+
+  const copyWalletId = () => {
+    if (wallet?.walletId) {
+      navigator.clipboard.writeText(wallet.walletId)
+      setCopiedWalletId(true)
+      setTimeout(() => setCopiedWalletId(false), 2000)
+    }
+  }
+
+  const usdcBalance = wallet?.balances?.find(
+    (b) => b.symbol === "USDC" || b.symbol?.startsWith("USDC")
+  )
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Wallet</h1>
-        <p className="text-muted-foreground">
-          Manage your USDC wallet on Arc blockchain
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Wallet</h1>
+          <p className="text-muted-foreground">
+            Manage your USDC wallet on Arc blockchain
+          </p>
+        </div>
+        <Button variant="outline" onClick={handleRefresh} disabled={refreshing || loading}>
+          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
-      {/* Wallet Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : !wallet ? (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">USDC Balance</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${wallet?.balance || "0"}</div>
-            <p className="text-xs text-muted-foreground">
-              on {wallet?.blockchain || "ARC-TESTNET"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Wallet Address</CardTitle>
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-mono truncate">{wallet?.address || "Not connected"}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {wallet?.walletId || "No wallet"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-2">
-            <Button size="sm" onClick={handleCreateWallet} disabled={loading}>
-              <Plus className="h-4 w-4 mr-1" />
-              Create Wallet
-            </Button>
-            <Button size="sm" variant="outline">
-              <RefreshCw className="h-4 w-4 mr-1" />
-              Refresh
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Send Payment */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Send Payment</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="address">Recipient Address</Label>
-              <Input
-                id="address"
-                placeholder="0x..."
-                value={sendAddress}
-                onChange={(e) => setSendAddress(e.target.value)}
-              />
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-4">No wallet connected</p>
+              <p className="text-sm text-muted-foreground">
+                Your wallet was created during login. If you don't see it, please{" "}
+                <a href="/login" className="text-primary hover:underline">
+                  log in again
+                </a>
+                .
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="amount">Amount (USDC)</Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="0.00"
-                value={sendAmount}
-                onChange={(e) => setSendAmount(e.target.value)}
-              />
-            </div>
-          </div>
-          <Button
-            className="mt-4"
-            onClick={handleSendPayment}
-            disabled={loading || !sendAddress || !sendAmount}
-          >
-            <Send className="h-4 w-4 mr-2" />
-            {loading ? "Sending..." : "Send Payment"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Transaction History */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            Transaction History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {transactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                <div>
-                  <p className="text-sm font-medium">To: {tx.to}</p>
-                  <p className="text-xs text-muted-foreground">{tx.date}</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* Wallet Overview */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">USDC Balance</CardTitle>
+                <Wallet className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  ${usdcBalance?.amount || "0.00"}
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{tx.amount} USDC</p>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    tx.status === "COMPLETE" 
-                      ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                      : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                  }`}>
-                    {tx.status}
-                  </span>
+                <p className="text-xs text-muted-foreground">on {wallet.blockchain}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Wallet Address</CardTitle>
+                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Address</p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-mono flex-1 p-2 rounded bg-muted truncate">
+                      {wallet.address}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyAddress}>
+                      {copiedAddress ? (
+                        <span className="text-green-500 text-xs">Copied!</span>
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Wallet ID</p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-mono flex-1 p-2 rounded bg-muted truncate">
+                      {wallet.walletId}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyWalletId}>
+                      {copiedWalletId ? (
+                        <span className="text-green-500 text-xs">Copied!</span>
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Chain</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{wallet.blockchain}</div>
+                <p className="text-xs text-muted-foreground">Arc Testnet</p>
+                <a
+                  href={`https://testnet.arcscan.app/address/${wallet.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline mt-2 inline-flex items-center"
+                >
+                  View on Explorer <ArrowUpRight className="h-3 w-3 ml-1" />
+                </a>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* All Token Balances */}
+          {wallet.balances.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Token Balances</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {wallet.balances.map((balance, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                          balance.symbol === "USDC" ? "bg-blue-600" :
+                          balance.symbol === "ETH" ? "bg-gray-700" :
+                          "bg-primary/20"
+                        }`}>
+                          {balance.symbol === "USDC" ? "$" :
+                           balance.symbol === "ETH" ? "Ξ" :
+                           balance.symbol?.slice(0, 2)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{balance.name || balance.symbol}</p>
+                          <p className="text-xs text-muted-foreground">{balance.symbol}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold">{balance.amount}</p>
+                        <p className="text-xs text-muted-foreground">{balance.symbol}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Send Payment */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Send Payment</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="address">Recipient Address</Label>
+                  <Input
+                    id="address"
+                    placeholder="0x..."
+                    value={sendAddress}
+                    onChange={(e) => setSendAddress(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="amount">Amount (USDC)</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={sendAmount}
+                    onChange={(e) => setSendAmount(e.target.value)}
+                  />
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <Button
+                className="mt-4"
+                onClick={handleSendPayment}
+                disabled={!sendAddress || !sendAmount}
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Send Payment
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Transaction History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Recent Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {transactions.length === 0 ? (
+                <p className="text-center text-muted-foreground py-4">No transactions yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {transactions.map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          tx.type === "receive" ? "bg-green-500/10" : "bg-blue-500/10"
+                        }`}>
+                          {tx.type === "receive" ? (
+                            <ArrowDownRight className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4 text-blue-500" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {tx.type === "receive" ? "Received" : "Sent"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {tx.type === "receive" ? `From: ${tx.from.slice(0, 10)}...` : `To: ${tx.to.slice(0, 10)}...`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" : "text-blue-500"}`}>
+                          {tx.type === "receive" ? "+" : "-"}{tx.amount} USDC
+                        </p>
+                        <p className="text-xs text-muted-foreground">{tx.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   )
 }
