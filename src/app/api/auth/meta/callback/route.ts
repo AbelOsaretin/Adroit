@@ -35,12 +35,13 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     if (data.success) {
-      // Store connection status in localStorage
+      // Store connection status and token in localStorage
       const html = `
         <html>
           <body>
             <script>
               localStorage.setItem("meta-connected", "true");
+              localStorage.setItem("meta-access-token", "${data.accessToken || ""}");
               localStorage.setItem("meta-account-id", "${data.accountId || ""}");
               localStorage.setItem("meta-account-name", "${data.accountName || ""}");
               window.location.href = "/dashboard/settings?connected=true";

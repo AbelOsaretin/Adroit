@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
+          accessToken: account.accessToken,
           accountId: account.accountId,
           accountName: account.accountName,
         })
