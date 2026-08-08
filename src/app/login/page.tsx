@@ -113,7 +113,7 @@ export default function LoginPage() {
       } catch (err) {
         console.error("Failed to initialize SDK:", err)
         if (!cancelled) {
-          setStatus("Failed to initialize Circle SDK")
+          setStatus("Failed to initialize Circle SDK: " + (err instanceof Error ? err.message : String(err)))
         }
       }
     }
