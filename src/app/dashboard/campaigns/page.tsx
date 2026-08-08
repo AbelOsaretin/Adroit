@@ -13,6 +13,7 @@ import {
   Play,
   RefreshCw,
   Loader2,
+  ExternalLink,
 } from "lucide-react"
 
 interface Campaign {
@@ -21,10 +22,21 @@ interface Campaign {
   status: string
   objective: string
   dailyBudget: number | null
+  platform: string
 }
 
+const PLATFORMS = [
+  { id: "all", name: "All Platforms", color: "text-white" },
+  { id: "meta", name: "Meta Ads", color: "text-blue-500", icon: "M" },
+  { id: "google", name: "Google Ads", color: "text-red-500", icon: "G" },
+  { id: "tiktok", name: "TikTok Ads", color: "text-pink-500", icon: "T" },
+  { id: "linkedin", name: "LinkedIn Ads", color: "text-blue-600", icon: "L" },
+  { id: "snapchat", name: "Snapchat Ads", color: "text-yellow-500", icon: "S" },
+  { id: "pinterest", name: "Pinterest Ads", color: "text-red-600", icon: "P" },
+]
+
 export default function CampaignsPage() {
-  const [activeTab, setActiveTab] = useState("all")
+  const [activePlatform, setActivePlatform] = useState("all")
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -50,9 +62,14 @@ export default function CampaignsPage() {
       const insightsData = await insightsRes.json()
 
       if (campaignsData.success) {
-        setCampaigns(campaignsData.data)
+        // Tag all campaigns as "meta" platform
+        const metaCampaigns = campaignsData.data.map((c: any) => ({
+          ...c,
+          platform: "meta",
+        }))
+        setCampaigns(metaCampaigns)
         setStats({
-          activeCampaigns: campaignsData.data.filter(
+          activeCampaigns: metaCampaigns.filter(
             (c: Campaign) => c.status === "ACTIVE"
           ).length,
           totalSpend: insightsData.data?.summary?.spend || 0,
@@ -69,7 +86,6 @@ export default function CampaignsPage() {
 
   const toggleCampaignStatus = async (campaign: Campaign) => {
     const newStatus = campaign.status === "ACTIVE" ? "PAUSED" : "ACTIVE"
-    // In production, this would call the Meta API to update campaign status
     setCampaigns(
       campaigns.map((c) =>
         c.id === campaign.id ? { ...c, status: newStatus } : c
@@ -83,9 +99,9 @@ export default function CampaignsPage() {
   }
 
   const filteredCampaigns =
-    activeTab === "all"
+    activePlatform === "all"
       ? campaigns
-      : campaigns.filter((c) => c.objective?.toLowerCase().includes(activeTab))
+      : campaigns.filter((c) => c.platform === activePlatform)
 
   return (
     <div className="space-y-6">
@@ -96,14 +112,60 @@ export default function CampaignsPage() {
             Manage your ad campaigns across all platforms
           </p>
         </div>
-        <Button onClick={fetchCampaigns} disabled={loading}>
-          {loading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={fetchCampaigns} disabled={loading}>
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Refresh
+          </Button>
+          <Button>
+            <Megaphone className="mr-2 h-4 w-4" />
+            New Campaign
+          </Button>
+        </div>
+      </div>
+
+      {/* Platform Cards */}
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+        {PLATFORMS.slice(1).map((platform) => {
+          const platformCampaigns = campaigns.filter(
+            (c) => c.platform === platform.id
+          )
+          const isActive = platformCampaigns.some(
+            (c) => c.status === "ACTIVE"
+          )
+          return (
+            <Card
+              key={platform.id}
+              className={`cursor-pointer transition-all ${
+                activePlatform === platform.id
+                  ? "ring-2 ring-primary"
+                  : "hover:shadow-md"
+              }`}
+              onClick={() => setActivePlatform(platform.id)}
+            >
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${platform.color} bg-current/10`}
+                  >
+                    {platform.icon}
+                  </span>
+                  {isActive && (
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                  )}
+                </div>
+                <p className="text-sm font-medium">{platform.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {platformCampaigns.length} campaigns
+                </p>
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
 
       {/* Stats Cards */}
@@ -160,98 +222,93 @@ export default function CampaignsPage() {
       {/* Campaign Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Campaigns</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              {activePlatform === "all"
+                ? "All Campaigns"
+                : PLATFORMS.find((p) => p.id === activePlatform)?.name}
+            </CardTitle>
+            {activePlatform !== "meta" && activePlatform !== "all" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Connect in Settings</span>
+                <ExternalLink className="h-4 w-4" />
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 mb-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="traffic">Traffic</TabsTrigger>
-              <TabsTrigger value="awareness">Awareness</TabsTrigger>
-              <TabsTrigger value="leads">Leads</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value={activeTab}>
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : filteredCampaigns.length === 0 ? (
-                <div className="text-center py-12">
-                  <Megaphone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No campaigns found</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium">
-                          Campaign
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium">
-                          Status
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium">
-                          Objective
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium">
-                          Daily Budget
-                        </th>
-                        <th className="text-right py-3 px-4 font-medium">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredCampaigns.map((campaign) => (
-                        <tr
-                          key={campaign.id}
-                          className="border-b hover:bg-muted/50"
-                        >
-                          <td className="py-3 px-4 font-medium">
-                            {campaign.name}
-                          </td>
-                          <td className="py-3 px-4">
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                statusColors[campaign.status] ||
-                                "bg-gray-100 text-gray-700"
-                              }`}
-                            >
-                              {campaign.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            {campaign.objective?.replace("OUTCOME_", "") || "N/A"}
-                          </td>
-                          <td className="py-3 px-4">
-                            {campaign.dailyBudget
-                              ? `$${campaign.dailyBudget}/day`
-                              : "N/A"}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => toggleCampaignStatus(campaign)}
-                            >
-                              {campaign.status === "ACTIVE" ? (
-                                <Pause className="h-4 w-4" />
-                              ) : (
-                                <Play className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredCampaigns.length === 0 ? (
+            <div className="text-center py-12">
+              <Megaphone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-2">No campaigns found</p>
+              {activePlatform !== "meta" && activePlatform !== "all" && (
+                <p className="text-sm text-muted-foreground">
+                  Connect your {PLATFORMS.find((p) => p.id === activePlatform)?.name}{" "}
+                  account in{" "}
+                  <a href="/dashboard/settings" className="text-primary hover:underline">
+                    Settings
+                  </a>{" "}
+                  to see campaigns here.
+                </p>
               )}
-            </TabsContent>
-          </Tabs>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-medium">Campaign</th>
+                    <th className="text-left py-3 px-4 font-medium">Platform</th>
+                    <th className="text-left py-3 px-4 font-medium">Status</th>
+                    <th className="text-left py-3 px-4 font-medium">Objective</th>
+                    <th className="text-left py-3 px-4 font-medium">Daily Budget</th>
+                    <th className="text-right py-3 px-4 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCampaigns.map((campaign) => (
+                    <tr key={campaign.id} className="border-b hover:bg-muted/50">
+                      <td className="py-3 px-4 font-medium">{campaign.name}</td>
+                      <td className="py-3 px-4">
+                        <span className="text-xs px-2 py-1 rounded-full bg-muted">
+                          {PLATFORMS.find((p) => p.id === campaign.platform)?.name || campaign.platform}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`text-xs px-2 py-1 rounded-full ${statusColors[campaign.status] || "bg-gray-100 text-gray-700"}`}>
+                          {campaign.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {campaign.objective?.replace("OUTCOME_", "") || "N/A"}
+                      </td>
+                      <td className="py-3 px-4">
+                        {campaign.dailyBudget ? `$${campaign.dailyBudget}/day` : "N/A"}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => toggleCampaignStatus(campaign)}
+                        >
+                          {campaign.status === "ACTIVE" ? (
+                            <Pause className="h-4 w-4" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
