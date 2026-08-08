@@ -1,137 +1,107 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { 
-  Megaphone, 
-  DollarSign, 
-  MousePointerClick, 
+import {
+  Megaphone,
+  DollarSign,
+  MousePointerClick,
   TrendingUp,
-  MoreHorizontal,
   Pause,
   Play,
-  Pencil
+  RefreshCw,
+  Loader2,
+  ExternalLink,
 } from "lucide-react"
 
-const campaignStats = [
-  {
-    title: "Active Campaigns",
-    value: "12",
-    icon: Megaphone,
-    description: "Across all platforms",
-  },
-  {
-    title: "Total Spend",
-    value: "$24,500",
-    icon: DollarSign,
-    description: "This month",
-  },
-  {
-    title: "Total Clicks",
-    value: "145,230",
-    icon: MousePointerClick,
-    description: "+8% from last month",
-  },
-  {
-    title: "ROAS",
-    value: "4.2x",
-    icon: TrendingUp,
-    description: "Return on ad spend",
-  },
-]
-
-const googleCampaigns = [
-  {
-    id: "1",
-    name: "Summer Sale 2026",
-    status: "ACTIVE",
-    budget: "$500/day",
-    impressions: "45,230",
-    clicks: "3,420",
-    conversions: "156",
-    roas: "4.8x",
-  },
-  {
-    id: "2",
-    name: "Brand Awareness",
-    status: "ACTIVE",
-    budget: "$300/day",
-    impressions: "89,100",
-    clicks: "5,670",
-    conversions: "89",
-    roas: "3.2x",
-  },
-  {
-    id: "3",
-    name: "Product Launch",
-    status: "PAUSED",
-    budget: "$750/day",
-    impressions: "23,450",
-    clicks: "1,890",
-    conversions: "45",
-    roas: "5.1x",
-  },
-  {
-    id: "4",
-    name: "Retargeting Campaign",
-    status: "ACTIVE",
-    budget: "$200/day",
-    impressions: "34,560",
-    clicks: "2,340",
-    conversions: "112",
-    roas: "6.2x",
-  },
-]
-
-const metaCampaigns = [
-  {
-    id: "5",
-    name: "Instagram Stories",
-    status: "ACTIVE",
-    budget: "$400/day",
-    impressions: "67,890",
-    clicks: "4,560",
-    conversions: "234",
-    roas: "3.9x",
-  },
-  {
-    id: "6",
-    name: "Facebook Retargeting",
-    status: "ACTIVE",
-    budget: "$250/day",
-    impressions: "45,670",
-    clicks: "3,210",
-    conversions: "178",
-    roas: "5.4x",
-  },
-  {
-    id: "7",
-    name: "Lead Generation",
-    status: "PAUSED",
-    budget: "$350/day",
-    impressions: "23,450",
-    clicks: "1,890",
-    conversions: "67",
-    roas: "2.8x",
-  },
-]
-
-const statusColors = {
-  ACTIVE: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  PAUSED: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+interface Campaign {
+  id: string
+  name: string
+  status: string
+  objective: string
+  dailyBudget: number | null
+  platform: string
 }
 
-export default function CampaignsPage() {
-  const [activeTab, setActiveTab] = useState("all")
+const PLATFORMS = [
+  { id: "all", name: "All Platforms", color: "text-white" },
+  { id: "meta", name: "Meta Ads", color: "text-blue-500", icon: "M" },
+  { id: "google", name: "Google Ads", color: "text-red-500", icon: "G" },
+  { id: "tiktok", name: "TikTok Ads", color: "text-pink-500", icon: "T" },
+  { id: "linkedin", name: "LinkedIn Ads", color: "text-blue-600", icon: "L" },
+  { id: "snapchat", name: "Snapchat Ads", color: "text-yellow-500", icon: "S" },
+  { id: "pinterest", name: "Pinterest Ads", color: "text-red-600", icon: "P" },
+]
 
-  const allCampaigns = [...googleCampaigns, ...metaCampaigns]
-  const displayCampaigns = activeTab === "all" 
-    ? allCampaigns 
-    : activeTab === "google" 
-      ? googleCampaigns 
-      : metaCampaigns
+export default function CampaignsPage() {
+  const [activePlatform, setActivePlatform] = useState("all")
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({
+    activeCampaigns: 0,
+    totalSpend: 0,
+    totalClicks: 0,
+    roas: 0,
+  })
+
+  useEffect(() => {
+    fetchCampaigns()
+  }, [])
+
+  const fetchCampaigns = async () => {
+    setLoading(true)
+    try {
+      const [campaignsRes, insightsRes] = await Promise.all([
+        fetch("/api/meta?action=campaigns"),
+        fetch("/api/meta?action=insights&days=30"),
+      ])
+
+      const campaignsData = await campaignsRes.json()
+      const insightsData = await insightsRes.json()
+
+      if (campaignsData.success) {
+        // Tag all campaigns as "meta" platform
+        const metaCampaigns = campaignsData.data.map((c: any) => ({
+          ...c,
+          platform: "meta",
+        }))
+        setCampaigns(metaCampaigns)
+        setStats({
+          activeCampaigns: metaCampaigns.filter(
+            (c: Campaign) => c.status === "ACTIVE"
+          ).length,
+          totalSpend: insightsData.data?.summary?.spend || 0,
+          totalClicks: insightsData.data?.summary?.clicks || 0,
+          roas: insightsData.data?.summary?.roas || 0,
+        })
+      }
+    } catch (error) {
+      console.error("Failed to fetch campaigns:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const toggleCampaignStatus = async (campaign: Campaign) => {
+    const newStatus = campaign.status === "ACTIVE" ? "PAUSED" : "ACTIVE"
+    setCampaigns(
+      campaigns.map((c) =>
+        c.id === campaign.id ? { ...c, status: newStatus } : c
+      )
+    )
+  }
+
+  const statusColors: Record<string, string> = {
+    ACTIVE: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+    PAUSED: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+  }
+
+  const filteredCampaigns =
+    activePlatform === "all"
+      ? campaigns
+      : campaigns.filter((c) => c.platform === activePlatform)
 
   return (
     <div className="space-y-6">
@@ -142,91 +112,203 @@ export default function CampaignsPage() {
             Manage your ad campaigns across all platforms
           </p>
         </div>
-        <Button>
-          <Megaphone className="mr-2 h-4 w-4" />
-          New Campaign
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={fetchCampaigns} disabled={loading}>
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Refresh
+          </Button>
+          <Button>
+            <Megaphone className="mr-2 h-4 w-4" />
+            New Campaign
+          </Button>
+        </div>
+      </div>
+
+      {/* Platform Cards */}
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+        {PLATFORMS.slice(1).map((platform) => {
+          const platformCampaigns = campaigns.filter(
+            (c) => c.platform === platform.id
+          )
+          const isActive = platformCampaigns.some(
+            (c) => c.status === "ACTIVE"
+          )
+          return (
+            <Card
+              key={platform.id}
+              className={`cursor-pointer transition-all ${
+                activePlatform === platform.id
+                  ? "ring-2 ring-primary"
+                  : "hover:shadow-md"
+              }`}
+              onClick={() => setActivePlatform(platform.id)}
+            >
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${platform.color} bg-current/10`}
+                  >
+                    {platform.icon}
+                  </span>
+                  {isActive && (
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                  )}
+                </div>
+                <p className="text-sm font-medium">{platform.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {platformCampaigns.length} campaigns
+                </p>
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {campaignStats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
+            <Megaphone className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.activeCampaigns}</div>
+            <p className="text-xs text-muted-foreground">Across all platforms</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Spend</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${stats.totalSpend.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
+            <MousePointerClick className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats.totalClicks.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">ROAS</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.roas.toFixed(1)}x</div>
+            <p className="text-xs text-muted-foreground">Return on ad spend</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Campaign Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Campaigns</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              {activePlatform === "all"
+                ? "All Campaigns"
+                : PLATFORMS.find((p) => p.id === activePlatform)?.name}
+            </CardTitle>
+            {activePlatform !== "meta" && activePlatform !== "all" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Connect in Settings</span>
+                <ExternalLink className="h-4 w-4" />
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="all">All Platforms</TabsTrigger>
-              <TabsTrigger value="google">Google Ads</TabsTrigger>
-              <TabsTrigger value="meta">Meta Ads</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value={activeTab}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium">Campaign</th>
-                      <th className="text-left py-3 px-4 font-medium">Status</th>
-                      <th className="text-left py-3 px-4 font-medium">Budget</th>
-                      <th className="text-left py-3 px-4 font-medium">Impressions</th>
-                      <th className="text-left py-3 px-4 font-medium">Clicks</th>
-                      <th className="text-left py-3 px-4 font-medium">Conversions</th>
-                      <th className="text-left py-3 px-4 font-medium">ROAS</th>
-                      <th className="text-right py-3 px-4 font-medium">Actions</th>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredCampaigns.length === 0 ? (
+            <div className="text-center py-12">
+              <Megaphone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-2">No campaigns found</p>
+              {activePlatform !== "meta" && activePlatform !== "all" && (
+                <p className="text-sm text-muted-foreground">
+                  Connect your {PLATFORMS.find((p) => p.id === activePlatform)?.name}{" "}
+                  account in{" "}
+                  <a href="/dashboard/settings" className="text-primary hover:underline">
+                    Settings
+                  </a>{" "}
+                  to see campaigns here.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-medium">Campaign</th>
+                    <th className="text-left py-3 px-4 font-medium">Platform</th>
+                    <th className="text-left py-3 px-4 font-medium">Status</th>
+                    <th className="text-left py-3 px-4 font-medium">Objective</th>
+                    <th className="text-left py-3 px-4 font-medium">Daily Budget</th>
+                    <th className="text-right py-3 px-4 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCampaigns.map((campaign) => (
+                    <tr key={campaign.id} className="border-b hover:bg-muted/50">
+                      <td className="py-3 px-4 font-medium">{campaign.name}</td>
+                      <td className="py-3 px-4">
+                        <span className="text-xs px-2 py-1 rounded-full bg-muted">
+                          {PLATFORMS.find((p) => p.id === campaign.platform)?.name || campaign.platform}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`text-xs px-2 py-1 rounded-full ${statusColors[campaign.status] || "bg-gray-100 text-gray-700"}`}>
+                          {campaign.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {campaign.objective?.replace("OUTCOME_", "") || "N/A"}
+                      </td>
+                      <td className="py-3 px-4">
+                        {campaign.dailyBudget ? `$${campaign.dailyBudget}/day` : "N/A"}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => toggleCampaignStatus(campaign)}
+                        >
+                          {campaign.status === "ACTIVE" ? (
+                            <Pause className="h-4 w-4" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {displayCampaigns.map((campaign) => (
-                      <tr key={campaign.id} className="border-b hover:bg-muted/50">
-                        <td className="py-3 px-4 font-medium">{campaign.name}</td>
-                        <td className="py-3 px-4">
-                          <span className={`text-xs px-2 py-1 rounded-full ${statusColors[campaign.status as keyof typeof statusColors]}`}>
-                            {campaign.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">{campaign.budget}</td>
-                        <td className="py-3 px-4">{campaign.impressions}</td>
-                        <td className="py-3 px-4">{campaign.clicks}</td>
-                        <td className="py-3 px-4">{campaign.conversions}</td>
-                        <td className="py-3 px-4 font-medium">{campaign.roas}</td>
-                        <td className="py-3 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              {campaign.status === "ACTIVE" ? (
-                                <Pause className="h-4 w-4" />
-                              ) : (
-                                <Play className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </TabsContent>
-          </Tabs>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
