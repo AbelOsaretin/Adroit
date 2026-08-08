@@ -1,7 +1,7 @@
 "use client"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +13,28 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import React from "react"
+import { LogOut } from "lucide-react"
 
 export function TopNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const pathSegments = pathname.split("/").filter(Boolean)
+
+  const handleLogout = () => {
+    // Clear all auth-related localStorage items
+    localStorage.removeItem("adroit-user-id")
+    localStorage.removeItem("adroit-auth-method")
+    localStorage.removeItem("circle-userToken")
+    localStorage.removeItem("circle-encryptionKey")
+    localStorage.removeItem("circle-deviceId")
+    localStorage.removeItem("circle-deviceToken")
+    localStorage.removeItem("circle-deviceEncryptionKey")
+    localStorage.removeItem("circle-wallet-id")
+    localStorage.removeItem("circle-wallet-address")
+
+    // Redirect to login
+    router.push("/login")
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background">
@@ -60,7 +78,11 @@ export function TopNav() {
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings">Settings</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                <LogOut className="h-4 w-4 mr-2" />
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
