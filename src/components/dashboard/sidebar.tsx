@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Chat", href: "/dashboard/chat", icon: MessagesSquare },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
   { name: "Cards", href: "/dashboard/cards", icon: CreditCard },
   { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
@@ -34,7 +35,6 @@ const navigation = [
   { name: "Content", href: "/dashboard/content", icon: FileText, disabled: true },
   { name: "SEO", href: "/dashboard/seo", icon: Search, disabled: true },
   { name: "Social Media", href: "/dashboard/social", icon: Share2, disabled: true },
-  { name: "Chat", href: "/dashboard/chat", icon: MessagesSquare },
 ]
 
 const bottomNavigation = [
