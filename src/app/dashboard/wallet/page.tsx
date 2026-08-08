@@ -155,20 +155,17 @@ export default function WalletPage() {
         encryptionKey,
       })
       
-      // Use SDK to create and sign transaction directly
-      // The SDK handles the challenge creation and signing internally
-      const transactionParams = {
+      // Create transaction challenge via SDK
+      // The SDK will handle the challenge creation and signing
+      sdk.createTransactionChallenge({
         walletId: wallet.walletId,
         toAddress: sendAddress,
         tokenAddress: '0x3600000000000000000000000000000000000000', // USDC on Arc
         amount: sendAmount,
         blockchain: 'ARC-TESTNET',
-      }
-      
-      // Execute the transaction via SDK
-      sdk.createTransaction(transactionParams, (error: unknown, result: any) => {
+      }, (error: unknown, result: any) => {
         if (error) {
-          console.error("Failed to create transaction:", error)
+          console.error("Failed to create transaction challenge:", error)
           setTransactions([
             {
               id: `tx-${Date.now()}`,
@@ -181,23 +178,43 @@ export default function WalletPage() {
             },
             ...transactions,
           ])
-        } else {
-          setTransactions([
-            {
-              id: result?.id || `tx-${Date.now()}`,
-              type: "send",
-              to: sendAddress,
-              from: wallet.address,
-              amount: sendAmount,
-              status: "INITIATED",
-              date: "Just now",
-            },
-            ...transactions,
-          ])
+          setLoading(false)
+        } else if (result?.challengeId) {
+          // Execute the challenge to complete the transaction
+          sdk.execute(result.challengeId, (execError: unknown) => {
+            if (execError) {
+              console.error("Failed to execute transaction:", execError)
+              setTransactions([
+                {
+                  id: result.challengeId,
+                  type: "send",
+                  to: sendAddress,
+                  from: wallet.address,
+                  amount: sendAmount,
+                  status: "FAILED",
+                  date: "Just now - Signing failed",
+                },
+                ...transactions,
+              ])
+            } else {
+              setTransactions([
+                {
+                  id: result.challengeId,
+                  type: "send",
+                  to: sendAddress,
+                  from: wallet.address,
+                  amount: sendAmount,
+                  status: "COMPLETE",
+                  date: "Just now",
+                },
+                ...transactions,
+              ])
+            }
+            setSendAddress("")
+            setSendAmount("")
+            setLoading(false)
+          })
         }
-        setSendAddress("")
-        setSendAmount("")
-        setLoading(false)
       })
     } catch (error) {
       console.error("Failed to send payment:", error)
