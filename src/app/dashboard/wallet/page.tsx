@@ -51,6 +51,12 @@ export default function WalletPage() {
   useEffect(() => {
     loadWalletData()
   }, [])
+
+  const loadWalletData = async () => {
+    setLoading(true)
+    try {
+      const walletId = localStorage.getItem("circle-wallet-id")
+      const walletAddress = localStorage.getItem("circle-wallet-address")
       const userToken = localStorage.getItem("circle-userToken")
 
       if (!walletId || !walletAddress) {
@@ -59,7 +65,6 @@ export default function WalletPage() {
         return
       }
 
-      // Fetch balance from API
       const balanceRes = await fetch("/api/wallet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +83,6 @@ export default function WalletPage() {
         balances: balanceData.tokenBalances || [],
       })
 
-      // Mock transactions for now
       setTransactions([
         {
           id: "tx-1",
@@ -105,7 +109,6 @@ export default function WalletPage() {
 
   const handleSendPayment = async () => {
     if (!sendAddress || !sendAmount || !wallet) return
-    // In production, this would call the wallet API to send USDC
     setTransactions([
       {
         id: `tx-${Date.now()}`,
@@ -122,10 +125,6 @@ export default function WalletPage() {
     setSendAmount("")
   }
 
-  const usdcBalance = wallet?.balances?.find(
-    (b) => b.symbol === "USDC" || b.symbol?.startsWith("USDC")
-  )
-
   const copyAddress = () => {
     if (wallet?.address) {
       navigator.clipboard.writeText(wallet.address)
@@ -141,6 +140,10 @@ export default function WalletPage() {
       setTimeout(() => setCopiedWalletId(false), 2000)
     }
   }
+
+  const usdcBalance = wallet?.balances?.find(
+    (b) => b.symbol === "USDC" || b.symbol?.startsWith("USDC")
+  )
 
   return (
     <div className="space-y-6">
