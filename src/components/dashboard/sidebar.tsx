@@ -30,7 +30,7 @@ const navigation = [
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
   { name: "Cards", href: "/dashboard/cards", icon: CreditCard },
   { name: "Wallet", href: "/dashboard/wallet", icon: Wallet },
-  { name: "Services", href: "/dashboard/services", icon: Store },
+  { name: "x402 Services", href: "/dashboard/services", icon: Store },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2, disabled: true },
   { name: "Content", href: "/dashboard/content", icon: FileText, disabled: true },
   { name: "SEO", href: "/dashboard/seo", icon: Search, disabled: true },
