@@ -140,9 +140,8 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Create a transaction challenge via Circle API
-        // This creates a challenge that the user must sign via SDK
-        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions`, {
+        // Correct endpoint: /v1/w3s/user/transactions/transfer
+        const response = await fetch(`${CIRCLE_BASE_URL}/v1/w3s/user/transactions/transfer`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -150,10 +149,11 @@ export async function POST(request: NextRequest) {
             'X-User-Token': userToken,
           },
           body: JSON.stringify({
+            idempotencyKey: crypto.randomUUID(),
             walletId,
-            toAddress,
+            destinationAddress: toAddress,
             tokenAddress: tokenAddress || '0x3600000000000000000000000000000000000000', // USDC on Arc
-            amount: amount.toString(),
+            amounts: [amount.toString()],
             blockchain: 'ARC-TESTNET',
           }),
         });
