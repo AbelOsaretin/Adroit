@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ArrowRight } from 'lucide-react'
-import Link from "next/link"
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -19,7 +19,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter mb-8 text-gradient"
+          className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter mb-8 pt-6 text-gradient"
         >
           Your AI
           <br />
@@ -32,21 +32,22 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed"
         >
-          End-to-end marketing services for small businesses. 
-          Autonomous AI-powered campaigns, content creation, SEO optimization, 
-          and social media management — all at a fraction of traditional agency costs.
+          End-to-end marketing services for small businesses. Autonomous
+          AI-powered campaigns, content creation, SEO optimization, and social
+          media management — all at a fraction of traditional agency costs.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 pb-4"
         >
           <Link href="/dashboard">
             <button className="group relative px-8 py-4 bg-white text-black rounded-full font-semibold text-lg overflow-hidden transition-all hover:scale-105">
               <span className="relative z-10 flex items-center gap-2">
-                Get Started <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                Get Started{" "}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
@@ -57,5 +58,5 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
