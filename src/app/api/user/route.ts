@@ -66,6 +66,21 @@ export async function GET(request: NextRequest) {
         });
       }
 
+      case "all": {
+        // Return all data from all tables (for debugging)
+        const db = getDb();
+        const users = await db.execute("SELECT * FROM users");
+        const onboardingData = await db.execute("SELECT * FROM onboarding");
+        const integrationsData = await db.execute("SELECT * FROM integrations");
+        const settingsData = await db.execute("SELECT * FROM settings");
+        return NextResponse.json({
+          users: users.rows,
+          onboarding: onboardingData.rows,
+          integrations: integrationsData.rows,
+          settings: settingsData.rows,
+        });
+      }
+
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
