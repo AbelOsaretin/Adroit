@@ -169,6 +169,24 @@ export default function LoginPage() {
       localStorage.setItem("circle-deviceToken", data.deviceToken)
       localStorage.setItem("circle-deviceEncryptionKey", data.deviceEncryptionKey)
 
+      // Update SDK config with new device token
+      const sdk = sdkRef.current
+      if (sdk) {
+        const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+        sdk.updateConfigs({
+          appSettings: { appId },
+          loginConfigs: {
+            deviceToken: data.deviceToken,
+            deviceEncryptionKey: data.deviceEncryptionKey,
+            google: {
+              clientId: googleClientId,
+              redirectUri: window.location.origin + "/login",
+              selectAccountPrompt: true,
+            },
+          },
+        })
+      }
+
       setStatus("Device token created. Click 'Login with Google' to continue.")
     } catch (error) {
       setStatus("Failed to create device token")
