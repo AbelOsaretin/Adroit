@@ -3,7 +3,8 @@
 
 import { createClient } from "@libsql/client";
 
-const DB_URL = process.env.DATABASE_URL || "file:./mastra.db";
+// Use file-based storage for LibSQL (not postgresql)
+const DB_URL = "file:./mastra.db";
 
 let db: ReturnType<typeof createClient> | null = null;
 
