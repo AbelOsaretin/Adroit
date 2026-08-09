@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   
   const url = new URL(request.url)
   const code = url.searchParams.get("code")
-  const state = url.searchParams.get("state") // userId
+  const state = url.searchParams.get("state") // Encoded wallet info
   const error = url.searchParams.get("error")
 
   if (error) {
@@ -32,6 +32,18 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // Decode wallet info from state
+  let walletAddress = "default-user"
+  let walletId = ""
+  try {
+    const stateData = JSON.parse(decodeURIComponent(state || "{}"))
+    walletAddress = stateData.walletAddress || "default-user"
+    walletId = stateData.walletId || ""
+  } catch (e) {
+    // Fallback to plain state
+    walletAddress = state || "default-user"
+  }
+
   try {
     const response = await fetch(`${url.origin}/api/auth/meta`, {
       method: "POST",
@@ -39,7 +51,8 @@ export async function GET(request: NextRequest) {
       body: JSON.stringify({
         action: "callback",
         code,
-        userId: state || "default-user",
+        walletAddress,
+        walletId,
       }),
     })
 
@@ -47,7 +60,6 @@ export async function GET(request: NextRequest) {
 
     if (data.success) {
       // Save integration to database
-      const walletAddress = state || "default-user"
       await saveIntegration(walletAddress, "meta", {
         access_token: data.accessToken || "",
         account_id: data.accountId || "",

@@ -32,6 +32,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "META_APP_ID not configured" }, { status: 500 })
     }
 
+    const walletAddress = url.searchParams.get("walletAddress") || "default-user"
+    const walletId = url.searchParams.get("walletId") || ""
+
+    // Encode wallet info in state parameter (URL encoded)
+    const state = encodeURIComponent(JSON.stringify({ walletAddress, walletId }))
+
     const scopes = [
       "ads_management",
       "ads_read",
@@ -40,7 +46,7 @@ export async function GET(request: NextRequest) {
       "pages_read_engagement",
     ].join(",")
 
-    const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${META_APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI + "/api/auth/meta/callback")}&scope=${scopes}&state=${userId}`
+    const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${META_APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI + "/api/auth/meta/callback")}&scope=${scopes}&state=${state}`
 
     return NextResponse.json({ authUrl })
   }

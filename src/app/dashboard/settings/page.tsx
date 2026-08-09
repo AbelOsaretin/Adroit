@@ -155,6 +155,7 @@ export default function SettingsPage() {
     setLoading(true)
     try {
       const walletAddress = localStorage.getItem("circle-wallet-address")
+      const walletId = localStorage.getItem("circle-wallet-id")
       if (!walletAddress) return
 
       await fetch("/api/user", {
@@ -163,6 +164,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           action: "save-settings",
           walletAddress,
+          walletId,
           data: settings[section as keyof Settings],
         }),
       })
@@ -221,9 +223,18 @@ export default function SettingsPage() {
       return
     }
 
-    // Get OAuth URL
+    // Get wallet address and ID from localStorage
+    const walletAddress = localStorage.getItem("circle-wallet-address")
+    const walletId = localStorage.getItem("circle-wallet-id")
+    
+    if (!walletAddress) {
+      console.error("No wallet address found")
+      return
+    }
+
+    // Get OAuth URL with wallet address in state
     try {
-      const res = await fetch("/api/auth/meta?action=auth")
+      const res = await fetch(`/api/auth/meta?action=auth&walletAddress=${walletAddress}&walletId=${walletId || ""}`)
       const data = await res.json()
       if (data.authUrl) {
         window.location.href = data.authUrl
