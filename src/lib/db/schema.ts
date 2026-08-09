@@ -1,17 +1,19 @@
 // Database schema and initialization for Adroit
-// Uses LibSQL for storage
+// Uses LibSQL for storage - Turso in production, local file in development
 
 import { createClient } from "@libsql/client";
 
-// Use file-based storage for LibSQL (not postgresql)
-const DB_URL = "file:./mastra.db";
+// Use Turso in production, local file in development
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN;
 
 let db: ReturnType<typeof createClient> | null = null;
 
 export function getDb() {
   if (!db) {
     db = createClient({
-      url: DB_URL,
+      url: TURSO_URL || "file:./mastra.db",
+      authToken: TURSO_AUTH_TOKEN,
     });
   }
   return db;

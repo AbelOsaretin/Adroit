@@ -11,12 +11,24 @@ import { agentServicesTool } from "./tools/agent-services";
 import { userWalletTool } from "./tools/user-wallet";
 import { cardTool } from "./tools/virtual-card";
 
+// Use Turso in production, local file in development
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN;
+
+const storage = TURSO_URL
+  ? new LibSQLStore({
+      id: "mastra-storage",
+      url: TURSO_URL,
+      authToken: TURSO_AUTH_TOKEN,
+    })
+  : new LibSQLStore({
+      id: "mastra-storage",
+      url: "file:./mastra.db",
+    });
+
 export const mastra = new Mastra({
   agents: { campaignOptimizerAgent },
   workflows: { approvalQueueWorkflow, campaignExecutorWorkflow },
   tools: { arcWalletTool, gatewayTool, agentServicesTool, userWalletTool, cardTool },
-  storage: new LibSQLStore({
-    id: "mastra-storage",
-    url: "file:./mastra.db",
-  }),
+  storage,
 });
