@@ -152,15 +152,48 @@ export default function OnboardPage() {
   const handleSubmit = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/onboard', {
+      // Get wallet address from localStorage
+      const walletAddress = localStorage.getItem('circle-wallet-address')
+      
+      if (!walletAddress) {
+        console.error('No wallet address found')
+        return
+      }
+
+      // Save onboarding data to database
+      const res = await fetch('/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          action: 'save-onboarding',
+          walletAddress,
+          data: {
+            wallet_address: walletAddress,
+            company_name: formData.companyName,
+            industry: formData.industry,
+            website: formData.website,
+            company_size: formData.companySize,
+            marketing_channels: JSON.stringify(formData.currentChannels),
+            monthly_budget: formData.monthlyBudget,
+            goals: JSON.stringify(formData.marketingGoals),
+            target_audience: formData.targetAudience,
+            pain_points: formData.painPoints,
+            competitors: formData.competitors,
+            brand_primary_color: formData.brandPrimaryColor,
+            brand_secondary_color: formData.brandSecondaryColor,
+            brand_voice: formData.brandVoice,
+            instagram: formData.instagram,
+            facebook: formData.facebook,
+            twitter: formData.twitter,
+            linkedin: formData.linkedin,
+            tiktok: formData.tiktok,
+          },
+        }),
       })
+      
       if (res.ok) {
-        const data = await res.json()
-        // Save userId for chat to use
-        localStorage.setItem('adroit-user-id', data.userId)
+        // Mark onboarding as complete
+        localStorage.setItem('adroit-onboarding-complete', 'true')
         router.push('/dashboard')
       }
     } catch (error) {

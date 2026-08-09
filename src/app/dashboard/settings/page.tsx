@@ -89,10 +89,62 @@ export default function SettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch("/api/settings")
+      const walletAddress = localStorage.getItem("circle-wallet-address")
+      if (!walletAddress) return
+
+      // Fetch settings from database
+      const res = await fetch(`/api/user?wallet=${walletAddress}&action=settings`)
       const data = await res.json()
-      if (data.success) {
-        setSettings(data.data)
+      
+      if (data.settings) {
+        setSettings({
+          account: {
+            fullName: data.settings.name || "Admin User",
+            email: data.settings.email || "admin@adroit.ai",
+            phone: data.settings.phone || "+1 (555) 123-4567",
+            timezone: data.settings.timezone || "utc-5",
+          },
+          preferences: {
+            language: data.settings.language || "en",
+            currency: data.settings.currency || "usd",
+            theme: data.settings.theme || "dark",
+          },
+          notifications: data.settings.notifications ? JSON.parse(data.settings.notifications) : {
+            emailNotifications: true,
+            pushNotifications: true,
+            campaignAlerts: true,
+            performanceReports: true,
+            frequency: "real-time",
+          },
+          integrations: {
+            metaConnected: false,
+            metaAccountId: null,
+            metaAccountName: null,
+            googleConnected: false,
+            tiktokConnected: false,
+          },
+        })
+      }
+
+      // Fetch integrations
+      const intRes = await fetch(`/api/user?wallet=${walletAddress}&action=integrations`)
+      const intData = await intRes.json()
+      
+      if (intData.integrations) {
+        const metaInt = intData.integrations.find((i: any) => i.platform === "meta")
+        const googleInt = intData.integrations.find((i: any) => i.platform === "google")
+        const tiktokInt = intData.integrations.find((i: any) => i.platform === "tiktok")
+        
+        setSettings((prev) => ({
+          ...prev,
+          integrations: {
+            metaConnected: !!metaInt,
+            metaAccountId: metaInt?.account_id || null,
+            metaAccountName: metaInt?.account_name || null,
+            googleConnected: !!googleInt,
+            tiktokConnected: !!tiktokInt,
+          },
+        }))
       }
     } catch (error) {
       console.error("Failed to fetch settings:", error)
@@ -102,11 +154,15 @@ export default function SettingsPage() {
   const saveSettings = async (section: string) => {
     setLoading(true)
     try {
-      await fetch("/api/settings", {
+      const walletAddress = localStorage.getItem("circle-wallet-address")
+      if (!walletAddress) return
+
+      await fetch("/api/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          section,
+          action: "save-settings",
+          walletAddress,
           data: settings[section as keyof Settings],
         }),
       })

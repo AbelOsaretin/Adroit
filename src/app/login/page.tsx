@@ -270,13 +270,27 @@ export default function LoginPage() {
       setWallets(walletList)
 
       if (walletList.length > 0) {
+        const walletAddress = walletList[0].address
+        
         // Store wallet info
         localStorage.setItem("circle-wallet-id", walletList[0].id)
-        localStorage.setItem("circle-wallet-address", walletList[0].address)
+        localStorage.setItem("circle-wallet-address", walletAddress)
         localStorage.setItem("adroit-user-id", userToken)
 
-        setStatus("Wallet ready! Redirecting to onboarding...")
-        setTimeout(() => router.push("/onboard"), 1500)
+        // Check if user exists in database
+        const userRes = await fetch(`/api/user?wallet=${walletAddress}&action=full`)
+        const userData = await userRes.json()
+
+        if (userData.exists) {
+          // Returning user - load their data
+          localStorage.setItem("adroit-onboarding-complete", "true")
+          setStatus("Welcome back! Loading your data...")
+          setTimeout(() => router.push("/dashboard"), 1500)
+        } else {
+          // New user - redirect to onboarding
+          setStatus("New user detected! Let's get you set up...")
+          setTimeout(() => router.push("/onboard"), 1500)
+        }
       }
     } catch (error) {
       setStatus("Failed to load wallets")
