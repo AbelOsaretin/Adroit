@@ -152,8 +152,9 @@ export default function OnboardPage() {
   const handleSubmit = async () => {
     setLoading(true)
     try {
-      // Get wallet address from localStorage
+      // Get wallet info from localStorage
       const walletAddress = localStorage.getItem('circle-wallet-address')
+      const walletId = localStorage.getItem('circle-wallet-id')
       
       if (!walletAddress) {
         console.error('No wallet address found')
@@ -167,8 +168,10 @@ export default function OnboardPage() {
         body: JSON.stringify({
           action: 'save-onboarding',
           walletAddress,
+          walletId,
           data: {
             wallet_address: walletAddress,
+            wallet_id: walletId,
             company_name: formData.companyName,
             industry: formData.industry,
             website: formData.website,

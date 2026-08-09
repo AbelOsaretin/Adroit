@@ -23,10 +23,11 @@ export function getDb() {
 export async function initDatabase() {
   const client = getDb();
 
-  // Users table - wallet address is the primary key
+  // Users table - wallet address and wallet_id are the user identifiers
   await client.execute(`
     CREATE TABLE IF NOT EXISTS users (
       wallet_address TEXT PRIMARY KEY,
+      wallet_id TEXT,
       user_id TEXT,
       circle_user_id TEXT,
       email TEXT,
@@ -40,6 +41,7 @@ export async function initDatabase() {
   await client.execute(`
     CREATE TABLE IF NOT EXISTS onboarding (
       wallet_address TEXT PRIMARY KEY,
+      wallet_id TEXT,
       company_name TEXT,
       industry TEXT,
       website TEXT,
@@ -66,6 +68,7 @@ export async function initDatabase() {
   await client.execute(`
     CREATE TABLE IF NOT EXISTS integrations (
       wallet_address TEXT NOT NULL,
+      wallet_id TEXT,
       platform TEXT NOT NULL,
       access_token TEXT,
       account_id TEXT,
@@ -79,6 +82,7 @@ export async function initDatabase() {
   await client.execute(`
     CREATE TABLE IF NOT EXISTS settings (
       wallet_address TEXT PRIMARY KEY,
+      wallet_id TEXT,
       language TEXT DEFAULT 'en',
       currency TEXT DEFAULT 'usd',
       theme TEXT DEFAULT 'dark',
@@ -92,6 +96,7 @@ export async function initDatabase() {
     CREATE TABLE IF NOT EXISTS campaigns (
       id TEXT PRIMARY KEY,
       wallet_address TEXT NOT NULL,
+      wallet_id TEXT,
       platform TEXT NOT NULL,
       campaign_id TEXT,
       name TEXT,

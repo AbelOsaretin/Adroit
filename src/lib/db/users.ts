@@ -5,6 +5,7 @@ import { getDb } from "./schema";
 
 export interface User {
   wallet_address: string;
+  wallet_id: string;
   user_id: string;
   circle_user_id: string;
   email: string;
@@ -15,6 +16,7 @@ export interface User {
 
 export interface OnboardingData {
   wallet_address: string;
+  wallet_id: string;
   company_name: string;
   industry: string;
   website: string;
@@ -37,6 +39,7 @@ export interface OnboardingData {
 
 export interface Integration {
   wallet_address: string;
+  wallet_id: string;
   platform: string;
   access_token: string;
   account_id: string;
@@ -55,13 +58,14 @@ export async function getUserByWallet(walletAddress: string): Promise<User | nul
 }
 
 // Create new user
-export async function createUser(walletAddress: string, data?: Partial<User>): Promise<User> {
+export async function createUser(walletAddress: string, walletId: string, data?: Partial<User>): Promise<User> {
   const db = getDb();
   await db.execute({
-    sql: `INSERT OR REPLACE INTO users (wallet_address, user_id, circle_user_id, email, name)
-          VALUES (?, ?, ?, ?, ?)`,
+    sql: `INSERT OR REPLACE INTO users (wallet_address, wallet_id, user_id, circle_user_id, email, name)
+          VALUES (?, ?, ?, ?, ?, ?)`,
     args: [
       walletAddress,
+      walletId,
       data?.user_id || walletAddress,
       data?.circle_user_id || "",
       data?.email || "",
@@ -81,17 +85,18 @@ export async function updateUserLogin(walletAddress: string): Promise<void> {
 }
 
 // Save onboarding data
-export async function saveOnboarding(walletAddress: string, data: OnboardingData): Promise<void> {
+export async function saveOnboarding(walletAddress: string, walletId: string, data: OnboardingData): Promise<void> {
   const db = getDb();
   await db.execute({
     sql: `INSERT OR REPLACE INTO onboarding 
-          (wallet_address, company_name, industry, website, company_size,
+          (wallet_address, wallet_id, company_name, industry, website, company_size,
            marketing_channels, monthly_budget, goals, target_audience,
            pain_points, competitors, brand_primary_color, brand_secondary_color,
            brand_voice, instagram, facebook, twitter, linkedin, tiktok)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       walletAddress,
+      walletId,
       data.company_name,
       data.industry,
       data.website,

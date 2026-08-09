@@ -102,9 +102,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "walletAddress required" }, { status: 400 });
     }
 
+    const walletId = data?.walletId || body.walletId || "";
+
     switch (action) {
       case "create-user": {
-        const user = await createUser(walletAddress, data);
+        const user = await createUser(walletAddress, walletId, data);
         return NextResponse.json({ success: true, user });
       }
 
@@ -114,7 +116,7 @@ export async function POST(request: NextRequest) {
       }
 
       case "save-onboarding": {
-        await saveOnboarding(walletAddress, data);
+        await saveOnboarding(walletAddress, walletId, data);
         return NextResponse.json({ success: true });
       }
 
