@@ -2,7 +2,7 @@
 // Manages user data by wallet address
 
 import { NextRequest, NextResponse } from "next/server";
-import { initDatabase } from "@/lib/db/schema";
+import { initDatabase, getDb } from "@/lib/db/schema";
 import { getUserByWallet, createUser, updateUserLogin, saveOnboarding, getOnboarding, saveIntegration, getIntegration, getIntegrations, saveSettings, getSettings } from "@/lib/db/users";
 
 // Initialize database on first request

@@ -32,6 +32,7 @@ interface WalletData {
   blockchain: string
   balances: Array<{
     symbol: string
+    name: string
     amount: string
     tokenAddress?: string
   }>
@@ -651,12 +652,12 @@ export default function WalletPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Get free testnet USDC from the Circle Faucet to test your wallet.
                   </p>
-                  <Button variant="outline" asChild>
-                    <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline">
                       <DollarSign className="h-4 w-4 mr-2" />
                       Open Faucet
-                    </a>
-                  </Button>
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
             </div>

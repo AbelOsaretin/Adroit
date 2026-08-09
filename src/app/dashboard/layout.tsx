@@ -12,7 +12,7 @@ export default function DashboardLayout({
 }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider delayDuration={0}>
+      <TooltipProvider>
         <div className="min-h-screen flex">
           <Sidebar />
           <div className="flex-1 min-w-0">

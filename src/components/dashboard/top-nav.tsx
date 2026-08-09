@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import React from "react"
 import { LogOut } from "lucide-react"
 
@@ -22,7 +21,6 @@ export function TopNav() {
   const pathSegments = pathname.split("/").filter(Boolean)
 
   const handleLogout = () => {
-    // Clear all auth-related localStorage items
     localStorage.removeItem("adroit-user-id")
     localStorage.removeItem("adroit-auth-method")
     localStorage.removeItem("circle-userToken")
@@ -32,14 +30,12 @@ export function TopNav() {
     localStorage.removeItem("circle-deviceEncryptionKey")
     localStorage.removeItem("circle-wallet-id")
     localStorage.removeItem("circle-wallet-address")
-
-    // Redirect to login
     router.push("/login")
   }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="container flex h-12 items-center justify-between px-4 md:px-6">
         <div className="hidden md:block">
           <nav className="flex items-center space-x-2">
             <Link href="/dashboard" className="text-sm font-medium">
@@ -58,14 +54,12 @@ export function TopNav() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>AD</AvatarFallback>
-                </Avatar>
-              </Button>
+            <DropdownMenuTrigger className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>AD</AvatarFallback>
+              </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
@@ -76,11 +70,11 @@ export function TopNav() {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard/settings">Profile</Link>
+                <DropdownMenuItem>
+                  <Link href="/dashboard/settings" className="w-full">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard/settings">Settings</Link>
+                <DropdownMenuItem>
+                  <Link href="/dashboard/settings" className="w-full">Settings</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

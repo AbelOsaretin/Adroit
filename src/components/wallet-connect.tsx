@@ -154,11 +154,11 @@ export function WalletConnect() {
               <Button variant="ghost" size="sm" onClick={copyAddress}>
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <a href={`https://sepolia.etherscan.io/address/${user.walletAddress}`} target="_blank" rel="noopener noreferrer">
+              <a href={`https://sepolia.etherscan.io/address/${user.walletAddress}`} target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm">
                   <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
+                </Button>
+              </a>
             </div>
           </div>
         ) : (

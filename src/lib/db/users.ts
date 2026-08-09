@@ -51,7 +51,7 @@ export async function getUserByWallet(walletAddress: string): Promise<User | nul
     sql: "SELECT * FROM users WHERE wallet_address = ?",
     args: [walletAddress],
   });
-  return result.rows[0] as User | null;
+  return (result.rows[0] as any) as User | null;
 }
 
 // Create new user
@@ -121,7 +121,7 @@ export async function getOnboarding(walletAddress: string): Promise<OnboardingDa
     sql: "SELECT * FROM onboarding WHERE wallet_address = ?",
     args: [walletAddress],
   });
-  return result.rows[0] as OnboardingData | null;
+  return (result.rows[0] as any) as OnboardingData | null;
 }
 
 // Save integration
@@ -146,7 +146,7 @@ export async function getIntegration(walletAddress: string, platform: string): P
     sql: "SELECT * FROM integrations WHERE wallet_address = ? AND platform = ?",
     args: [walletAddress, platform],
   });
-  return result.rows[0] as Integration | null;
+  return (result.rows[0] as any) as Integration | null;
 }
 
 // Get all integrations for user
@@ -156,7 +156,7 @@ export async function getIntegrations(walletAddress: string): Promise<Integratio
     sql: "SELECT * FROM integrations WHERE wallet_address = ?",
     args: [walletAddress],
   });
-  return result.rows as Integration[];
+  return (result.rows as any[]) as Integration[];
 }
 
 // Delete integration
@@ -196,5 +196,5 @@ export async function getSettings(walletAddress: string): Promise<any | null> {
     sql: "SELECT * FROM settings WHERE wallet_address = ?",
     args: [walletAddress],
   });
-  return result.rows[0] || null;
+  return (result.rows[0] as any) || null;
 }
