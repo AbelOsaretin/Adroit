@@ -41,17 +41,30 @@ export const userWalletTool = createTool({
     }
 
     try {
+      // Map tool actions to API actions (kebab-case to camelCase)
+      const actionMap: Record<string, string> = {
+        'create-user': 'initializeUser',
+        'create-wallet': 'createWallet',
+        'list-wallets': 'listWallets',
+        'get-balance': 'getTokenBalance',
+        'send-transaction': 'sendPayment',
+        'get-transaction-status': 'getTokenBalance',
+      };
+
+      const apiAction = actionMap[action] || action;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/wallet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action,
+          action: apiAction,
           userId,
           walletId,
           toAddress,
           amount,
           tokenAddress,
           transactionId,
+          userToken: params.userToken,
         }),
       });
 
