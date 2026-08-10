@@ -14,7 +14,6 @@ export const cardTool = createTool({
       "get-card-details",
       "list-cards",
       "lock-card",
-      "unlock-card",
       "link-to-platform",
     ]),
     userId: z.string().optional().describe("User ID"),
@@ -31,11 +30,23 @@ export const cardTool = createTool({
     const { action, userId, cardId, amount, platform } = inputData;
 
     try {
+      // Map tool actions to API actions
+      const actionMap: Record<string, string> = {
+        'create-card': 'create',
+        'fund-card': 'fund',
+        'get-card-details': 'get-details',
+        'list-cards': 'list',
+        'lock-card': 'lock',
+        'link-to-platform': 'link-platform',
+      };
+
+      const apiAction = actionMap[action] || action;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cards`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: action.replace('-', '_'),
+          action: apiAction,
           userId: userId || 'default-user',
           cardId,
           amount,

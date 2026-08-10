@@ -114,6 +114,16 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      case "list": {
+        // List all cards for user
+        return NextResponse.json({
+          success: true,
+          data: {
+            cards: cards,
+          },
+        })
+      }
+
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 })
     }
