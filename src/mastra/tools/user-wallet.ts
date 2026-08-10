@@ -15,7 +15,7 @@ export const userWalletTool = createTool({
     action: z.enum([
       "create-user",
       "create-wallet",
-      "get-wallets",
+      "list-wallets",
       "get-balance",
       "send-transaction",
       "get-transaction-status",
@@ -98,7 +98,7 @@ function handleMockAction(
         mockMode: true,
       };
 
-    case 'get-wallets':
+    case 'list-wallets':
       return {
         success: true,
         data: {
