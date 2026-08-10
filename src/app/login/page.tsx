@@ -300,8 +300,24 @@ export default function LoginPage() {
         const userData = await userRes.json()
 
         if (userData.exists) {
-          // Returning user - load their data
+          // Returning user - load their data to localStorage
           localStorage.setItem("adroit-onboarding-complete", "true")
+          
+          // Store onboarding data
+          if (userData.onboarding) {
+            localStorage.setItem("adroit-onboarding", JSON.stringify(userData.onboarding))
+          }
+          
+          // Store integrations
+          if (userData.integrations) {
+            localStorage.setItem("adroit-integrations", JSON.stringify(userData.integrations))
+          }
+          
+          // Store settings
+          if (userData.settings) {
+            localStorage.setItem("adroit-settings", JSON.stringify(userData.settings))
+          }
+
           setStatus("Welcome back! Loading your data...")
           setTimeout(() => router.push("/dashboard"), 1500)
         } else {
