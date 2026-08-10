@@ -2,15 +2,59 @@
 // Fetches real campaign data from Meta Ads using user's OAuth token
 
 import { NextRequest, NextResponse } from "next/server"
+import { initDatabase, getDb } from "@/lib/db/schema"
 
-async function getMetaAccount(userToken?: string, accountId?: string) {
+// Initialize database
+let dbInitialized = false;
+async function ensureDb() {
+  if (!dbInitialized) {
+    await initDatabase();
+    dbInitialized = true;
+  }
+}
+
+async function getMetaTokenFromDb(walletAddress: string): Promise<{ accessToken: string; accountId: string } | null> {
+  await ensureDb();
+  const db = getDb();
+  
+  const result = await db.execute({
+    sql: "SELECT access_token, account_id FROM integrations WHERE wallet_address = ? AND platform = 'meta'",
+    args: [walletAddress],
+  });
+
+  const row = result.rows[0] as any;
+  if (!row) return null;
+
+  return {
+    accessToken: row.access_token,
+    accountId: row.account_id,
+  }
+}
+
+async function getMetaAccount(userToken?: string, accountId?: string, walletAddress?: string) {
   const { getAdAccount } = await import(
     "@/mastra/mcp/meta-ads/src/sdk"
   )
   
-  // Use user's OAuth token if provided, otherwise fall back to platform token
-  const accessToken = userToken || process.env.META_ACCESS_TOKEN
-  const adAccountId = accountId || process.env.META_AD_ACCOUNT_ID || "1825876572152624"
+  let accessToken = userToken;
+  let adAccountId = accountId;
+
+  // If no token provided, try to get from database
+  if (!accessToken && walletAddress) {
+    const dbToken = await getMetaTokenFromDb(walletAddress);
+    if (dbToken) {
+      accessToken = dbToken.accessToken;
+      adAccountId = dbToken.accountId;
+    }
+  }
+
+  // Fall back to platform token
+  if (!accessToken) {
+    accessToken = process.env.META_ACCESS_TOKEN;
+  }
+  if (!adAccountId) {
+    adAccountId = process.env.META_AD_ACCOUNT_ID || "1825876572152624";
+  }
   
   if (!accessToken) {
     throw new Error("No Meta access token available")
@@ -26,19 +70,29 @@ function serializeSdkObject(obj: any) {
 
 // GET /api/meta - Fetch campaign data
 export async function GET(request: NextRequest) {
+  await ensureDb();
+  
   const url = new URL(request.url)
   const action = url.searchParams.get("action") || "insights"
   const days = parseInt(url.searchParams.get("days") || "7")
   const userToken = url.searchParams.get("userToken") || undefined
   const accountId = url.searchParams.get("accountId") || undefined
+  const walletAddress = url.searchParams.get("walletAddress") || undefined
 
-  // Check if we have any token available
-  if (!userToken && !process.env.META_ACCESS_TOKEN) {
+  // Check if we have any token available (from request or database)
+  let hasToken = !!userToken || !!process.env.META_ACCESS_TOKEN;
+  
+  if (!hasToken && walletAddress) {
+    const dbToken = await getMetaTokenFromDb(walletAddress);
+    hasToken = !!dbToken;
+  }
+
+  if (!hasToken) {
     return getMockData(action, days)
   }
 
   try {
-    const account = await getMetaAccount(userToken, accountId)
+    const account = await getMetaAccount(userToken, accountId, walletAddress)
 
     switch (action) {
       case "insights": {

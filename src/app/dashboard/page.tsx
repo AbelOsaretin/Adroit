@@ -128,18 +128,20 @@ export default function DashboardPage() {
   const fetchAllData = async () => {
     setLoading(true)
     try {
-      // Get Meta access token from localStorage (set during OAuth)
+      // Get wallet info from localStorage
+      const walletAddress = localStorage.getItem("circle-wallet-address")
       const metaToken = localStorage.getItem("meta-access-token")
       const metaAccountId = localStorage.getItem("meta-account-id")
       
-      // Build query params with token if available
+      // Build query params - prioritize database lookup via walletAddress
+      const walletParam = walletAddress ? `&walletAddress=${walletAddress}` : ""
       const tokenParam = metaToken ? `&userToken=${metaToken}` : ""
       const accountParam = metaAccountId ? `&accountId=${metaAccountId}` : ""
       
       const [insightsRes, campaignsRes, platformRes] = await Promise.all([
-        fetch(`/api/meta?action=insights&days=${days}${tokenParam}${accountParam}`),
-        fetch(`/api/meta?action=campaigns${tokenParam}${accountParam}`),
-        fetch(`/api/meta?action=platform-comparison${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=insights&days=${days}${walletParam}${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=campaigns${walletParam}${tokenParam}${accountParam}`),
+        fetch(`/api/meta?action=platform-comparison${walletParam}${tokenParam}${accountParam}`),
       ])
 
       const insightsData = await insightsRes.json()
