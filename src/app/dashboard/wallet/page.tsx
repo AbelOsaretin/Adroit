@@ -424,21 +424,21 @@ export default function WalletPage() {
                 </Card>
               </div>
 
-              {/* Token Balances */}
-              {wallet.balances.length > 0 && (
+              {/* Token Balances (excluding USDC which is shown above) */}
+              {wallet.balances.filter(b => b.symbol !== "USDC").length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Token Balances</CardTitle>
+                    <CardTitle>Other Tokens</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {wallet.balances.map((balance, index) => (
+                      {wallet.balances.filter(b => b.symbol !== "USDC").map((balance, index) => (
                         <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                              balance.symbol === "USDC" ? "bg-blue-600" : balance.symbol === "ETH" ? "bg-gray-700" : "bg-primary/20"
+                              balance.symbol === "ETH" ? "bg-gray-700" : "bg-primary/20"
                             }`}>
-                              {balance.symbol === "USDC" ? "$" : balance.symbol === "ETH" ? "Ξ" : balance.symbol?.slice(0, 2)}
+                              {balance.symbol === "ETH" ? "Ξ" : balance.symbol?.slice(0, 2)}
                             </div>
                             <div>
                               <p className="text-sm font-medium">{balance.name || balance.symbol}</p>
