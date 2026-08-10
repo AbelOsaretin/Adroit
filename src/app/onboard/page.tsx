@@ -197,6 +197,26 @@ export default function OnboardPage() {
       if (res.ok) {
         // Mark onboarding as complete
         localStorage.setItem('adroit-onboarding-complete', 'true')
+        
+        // Fetch and store full user data from database
+        const userRes = await fetch(`/api/user?wallet=${walletAddress}&action=full`)
+        const userData = await userRes.json()
+        
+        // Store onboarding data
+        if (userData.onboarding) {
+          localStorage.setItem('adroit-onboarding', JSON.stringify(userData.onboarding))
+        }
+        
+        // Store integrations
+        if (userData.integrations) {
+          localStorage.setItem('adroit-integrations', JSON.stringify(userData.integrations))
+        }
+        
+        // Store settings
+        if (userData.settings) {
+          localStorage.setItem('adroit-settings', JSON.stringify(userData.settings))
+        }
+        
         router.push('/dashboard')
       }
     } catch (error) {
