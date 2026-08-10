@@ -23,18 +23,6 @@ export function getDb() {
 export async function initDatabase() {
   const client = getDb();
 
-  // Migration: Drop old tables if they exist (without wallet_id)
-  // This ensures the schema is up to date
-  try {
-    await client.execute("DROP TABLE IF EXISTS onboarding");
-    await client.execute("DROP TABLE IF EXISTS integrations");
-    await client.execute("DROP TABLE IF EXISTS settings");
-    await client.execute("DROP TABLE IF EXISTS campaigns");
-    await client.execute("DROP TABLE IF EXISTS users");
-  } catch (e) {
-    // Ignore errors if tables don't exist
-  }
-
   // Users table - wallet address and wallet_id are the user identifiers
   await client.execute(`
     CREATE TABLE IF NOT EXISTS users (
